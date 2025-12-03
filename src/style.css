@@ -1,0 +1,204 @@
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/Orbitron-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("./assets/fonts/orbitron/static/Orbitron-Black.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("./assets/fonts/exo/Exo-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("./assets/fonts/exo/static/Exo-Black.ttf") format("truetype");
+}
+
+:root {
+  --glow-color: rgb(166, 46, 210);
+}
+
+* {
+  font-family: "Orbitron";
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  align-items: center;
+  font-size: 24px;
+  background-color: #000;
+  color: #fff;
+  background-image: url("./assets/menuImgs/bg.png");
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+h1 {
+  font-size: 4rem;
+  line-height: 90%;
+  font-weight: 900;
+  transform: perspective(400px) rotate3d(1, 0, 0, 20deg);
+  font-family: "Exo";
+  background: #491f8e;
+  background: linear-gradient(to bottom, #491f8e 0%, #9479ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-family: "Exo";
+  color: #66a3ff;
+  font-weight: 700;
+}
+
+h4 {
+  font-size: 0.8rem;
+  transform: perspective(400px) rotate3d(1, 0, 0, 20deg);
+  font-family: "Exo";
+  font-weight: 500;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+button:first-of-type {
+  text-shadow: 0 0 5px #66a3ff, 0 0 10px #66a3ff, 0 0 20px #66a3ff, 0 0 40px #66a3ff;
+  border-color: #66a3ff;
+  box-shadow: rgba(102, 163, 255, 0.4) -5px 5px, rgba(102, 163, 255, 0.3) -10px 10px,
+    rgba(102, 163, 255, 0.2) -15px 15px, rgba(102, 163, 255, 0.1) -20px 20px, rgba(102, 163, 255, 0.05) -25px 25px;
+}
+
+button {
+  width: 80%;
+  font-family: "Orbitron";
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #fff;
+  text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 20px var(--glow-color),
+    0 0 40px var(--glow-color);
+  background-color: rgba(196, 159, 255, 0.3);
+  border: 5px solid #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  border-color: #c49fff;
+  box-shadow: rgba(182, 46, 240, 0.4) -5px 5px, rgba(182, 46, 240, 0.3) -10px 10px, rgba(182, 46, 240, 0.2) -15px 15px,
+    rgba(182, 46, 240, 0.1) -20px 20px, rgba(182, 46, 240, 0.05) -25px 25px;
+}
+
+img {
+  width: 520px;
+}
