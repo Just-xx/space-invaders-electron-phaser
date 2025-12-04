@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <!-- MAIN MENU -->
-
-    <div class="menu">
-      <div class="title">
-        <h1>SPACE<br />INVADERS</h1>
-        <h2>INWAZJA 2.0</h2>
-        <h4>by Jakub Dreczkowski</h4>
+    <div id="game">
+      <div id="game-menu">
+        <div class="title-wrapper">
+          <h1 id="menu-title">SPACE<br />INVADERS</h1>
+          <h2 id="menu-subtitle">INWAZJA 2.0</h2>
+          <h4 id="menu-author">by Jakub Dreczkowski</h4>
+        </div>
+        <div class="menu-btns-wrapper">
+          <button class="menu-btn" id="menu-start-btn">Start</button>
+          <button class="menu-btn" id="menu-levels-btn">Poziomy</button>
+          <button class="menu-btn" id="menu-options-btn">Ustawienia</button>
+        </div>
       </div>
-      <button>Start</button>
-      <button>Poziomy</button>
-      <button>Ustawienia</button>
+      <img id="hero-menu-img" src="./assets/menuImgs/ufo.png" alt="ufo" />
     </div>
-    <img src="./assets/menuImgs/ufo.png" alt="ufo" />
+    <script src="./main.js"></script>
   </body>
 </html>

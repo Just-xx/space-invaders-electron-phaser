@@ -2,6 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const isDev = !app.isPackaged;
 
 const createWindow = () => {
+  
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -16,6 +17,7 @@ const createWindow = () => {
   } else {
     win.loadFile('src/index.html');
   }
+
 };
 
 app.whenReady().then(() => {
