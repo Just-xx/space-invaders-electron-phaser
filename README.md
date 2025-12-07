@@ -10,7 +10,7 @@ In this game, the player controls a spaceship at the bottom of the screen, taske
 
 1.  Clone:
     ```bash
-    git clone <YOUR_REPOSITORY_URL>
+    git clone https://github.com/Just-xx/space-invaders-electron-phaser
     ```
 2.  Install dependencies:
     ```bash
