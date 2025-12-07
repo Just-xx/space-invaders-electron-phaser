@@ -1,0 +1,155 @@
+@import "./fonts.css";
+@import "./vars.css";
+
+* {
+  font-family: "Orbitron";
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  font-size: 24px;
+  background-color: #000;
+  color: #fff;
+  background-image: url("../assets/menuImgs/menu_bg.png");
+  background-size: cover;
+  background-position: right bottom;
+}
+
+#game {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.25);
+  transition: background-color 400ms ease-in;
+}
+
+.title-wrapper {
+  text-align: center;
+  margin-bottom: 32px;
+  transition: all 400ms ease-in;
+}
+
+/* Menu styling */
+#menu-title {
+  font-size: 4.3rem;
+  line-height: 90%;
+  font-weight: 900;
+  transform: perspective(400px) rotate3d(1, 0, 0, 20deg);
+  transform-origin: center;
+  font-family: "Exo";
+  background: #491f8e;
+  background: linear-gradient(to bottom, #fd74ff 0%, #61209d 100%);
+  text-shadow: var(--text-glow-shadow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#menu-subtitle {
+  font-size: 1.4rem;
+  font-family: "Exo";
+  color: var(--secondary);
+
+  
+  font-weight: 700;
+  text-shadow: 0 0 7px rgba(255, 255, 255, 0.15), 0 0 10px rgba(255, 255, 255, 0.15),
+    0 0 21px rgba(255, 255, 255, 0.151);
+  transform: scaleX(1.1);
+  letter-spacing: 2px;
+}
+
+#menu-author {
+  font-size: 0.7rem;
+  font-family: "Exo";
+  font-weight: 700;
+  opacity: 0.5;
+}
+
+#game-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-right: 32px;
+}
+
+.menu-btns-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transition: all 400ms ease-in;
+}
+
+.menu-btn:first-of-type {
+  text-shadow: var(--text-glow-shadow);
+}
+
+.menu-btn {
+  width: 80%;
+  font-family: "Orbitron";
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(196, 159, 255, 0.3);
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  transition: all 60ms ease-in-out;
+  width: 85%;
+}
+
+.menu-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(1.02);
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+#hero-menu-img {
+  animation-name: floating;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
+  width: 640px;
+}
+
+.hero-menu-img-wrapper {
+  transform: translateX(0%);
+  transition: transform 400ms ease-in, opacity 400ms ease-in;
+}
+
+/* Phaser canvas */
+#game-canvas {
+  position: fixed;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}

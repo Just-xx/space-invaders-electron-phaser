@@ -1,0 +1,111 @@
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/Orbitron-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Orbitron";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../assets/fonts/orbitron/static/Orbitron-Black.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("../assets/fonts/exo/Exo-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../assets/fonts/exo/static/Exo-Black.ttf") format("truetype");
+}

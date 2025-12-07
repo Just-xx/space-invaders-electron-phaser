@@ -4,13 +4,13 @@ const isDev = !app.isPackaged;
 const createWindow = () => {
   
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     autoHideMenuBar: false,
     resizable: true
   });
 
-  win.maximize();
+  // win.maximize();
 
   if (isDev) {
     win.loadURL('http://localhost:5173');

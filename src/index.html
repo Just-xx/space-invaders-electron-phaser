@@ -3,11 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Space Invaders 2.0</title>
-    <link rel="stylesheet" href="./style.css" />
+    <title>Space Invaders - Inwazja 2.0</title>
+    <link rel="stylesheet" href="./styles/main.css" />
   </head>
   <body>
     <div id="game">
+      <canvas id="game-canvas"></canvas>
       <div id="game-menu">
         <div class="title-wrapper">
           <h1 id="menu-title">SPACE<br />INVADERS</h1>
@@ -20,8 +21,12 @@
           <button class="menu-btn" id="menu-options-btn">Ustawienia</button>
         </div>
       </div>
-      <img id="hero-menu-img" src="./assets/menuImgs/ufo.png" alt="ufo" />
+      <div class="hero-menu-img-wrapper">
+        <img id="hero-menu-img" src="./assets/menuImgs/ufo.png" alt="ufo" />
+      </div>
+      
     </div>
-    <script src="./main.js"></script>
+    
+    <script type="module" src="./main.js"></script>
   </body>
 </html>

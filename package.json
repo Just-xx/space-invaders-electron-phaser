@@ -6,10 +6,9 @@
   "author": "",
   "main": "main.js",
   "scripts": {
-    "dev:vite": "vite src/",
+    "dev:vite": "vite src",
     "dev:electron": "electron main.js",
-    "dev": "concurrently 'npm run dev:vite' 'npm run dev:electron'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently 'npm run dev:vite' 'npm run dev:electron'"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
