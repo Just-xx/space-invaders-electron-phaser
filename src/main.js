@@ -61,7 +61,7 @@ const config = {
   },
   scene: [],
   scale: {
-    mode: Phaser.Scale.EXPAND,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     autoRound: true,
   },
@@ -71,8 +71,9 @@ const game = new Phaser.Game(config);
 game.scene.add("scene-game", GameScene, false);
 
 mainMenu.onStart(() => {
+
   gameCanvas.style.opacity = 1;
-  gameCanvas.style.zIndes = 1000;
+  gameCanvas.style.zIndex = 1000;
 
   game.scene.start("scene-game");
 });

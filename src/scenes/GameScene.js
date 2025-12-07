@@ -12,19 +12,24 @@ export default class GameScene extends Scene {
 
     this.cursor;
 
+    // player properties
+    this.playerSpeed = 500;
+    this.PLAYER_SCALE = 0.14;
+    this.PLAYER_MOVMENT_ANGLE = 5;
+
     // enemies properties
-    this.ENEMIES_SCALE = 0.12;
+    this.ENEMIES_SCALE = 0.115;
     this.ENEMIES_SPACING = 22;
-    this.enemiesSpeed = 80;
+    this.enemiesSpeed = 60;
     this.enemiesLevel = 0;
-    this.enemiesRowsCount = 5;
-    this.enemiesColumnsCount = 11;
-    this.enemiesBoundsX = { left: 128, right: 1792 };
+    this.enemiesRowsCount = 4; // zero also counts
+    this.enemiesColumnsCount = 11; // zero also counts
+    this.enemiesBoundsX = { left: 128, right: 1792 }; // subtract from right value of enemy actaul width
     this.enemiesStartY = 128;
     this.enemiesStartX = this.enemiesBoundsX.left;
     this.enemyWidth = -1;
     this.enemyHeight = -1;
-    this.disableProgress = true;
+    this.disableProgress = false;
   }
 
   preload() {
@@ -46,11 +51,27 @@ export default class GameScene extends Scene {
     this.#createPlayer();
 
     this.cursor = this.input.keyboard.createCursorKeys();
+
+    this.#createBoundiresLines();
+  }
+
+  #createBoundiresLines() {
+    const graphicsBoundiresLines = this.add.graphics();
+
+    // left line
+    graphicsBoundiresLines.lineStyle(1, 0x1c0e34, 1);
+    graphicsBoundiresLines.moveTo(this.enemiesBoundsX.left, this.enemiesStartY);
+    graphicsBoundiresLines.lineTo(this.enemiesBoundsX.left, 1080 - this.enemiesStartY);
+
+    // right line
+    graphicsBoundiresLines.moveTo(this.enemiesBoundsX.right + this.enemyWidth, this.enemiesStartY);
+    graphicsBoundiresLines.lineTo(this.enemiesBoundsX.right + this.enemyWidth, 1080 - this.enemiesStartY);
+    graphicsBoundiresLines.strokePath();
   }
 
   #createPlayer() {
-    this.player = this.physics.add.sprite(500, 500, "player");
-    this.player.setScale(0.15);
+    this.player = this.physics.add.sprite(1920 / 2, 1080 - this.enemiesStartY, "player").setOrigin(0, 0);
+    this.player.setScale(this.PLAYER_SCALE);
     this.player.body.allowGravity = false;
   }
 
@@ -63,16 +84,24 @@ export default class GameScene extends Scene {
     for (let j = 0; j <= this.enemiesRowsCount; j++) {
       for (let i = 0; i <= this.enemiesColumnsCount; i++) {
         if (j === 0 && i === 0) {
-          this.enemies.create(this.enemiesBoundsX.left, this.enemiesStartY, "enemy").setScale(this.ENEMIES_SCALE);
-          this.enemyWidth = this.enemies.getChildren()[0].displayWidth;
-          this.enemyHeight = this.enemies.getChildren()[0].displayHeight;
+          const firstEnemy = this.enemies
+            .create(this.enemiesBoundsX.left, this.enemiesStartY, "enemy")
+            .setScale(this.ENEMIES_SCALE)
+            .setOrigin(0, 0);
+          firstEnemy.flipX = true;
+          this.enemyWidth = firstEnemy.displayWidth;
+          this.enemyHeight = firstEnemy.displayHeight;
         } else {
           const xPos = this.enemiesBoundsX.left + (this.enemyWidth + this.ENEMIES_SPACING) * i;
           const yPos = this.enemiesStartY + (this.enemyHeight + this.ENEMIES_SPACING) * j;
-          this.enemies.create(xPos, yPos, "enemy").setScale(this.ENEMIES_SCALE);
+          const e = this.enemies.create(xPos, yPos, "enemy").setScale(this.ENEMIES_SCALE).setOrigin(0, 0);
+          e.flipX = true;
         }
       }
     }
+
+    // correct boundires to be equal
+    this.enemiesBoundsX.right = this.enemiesBoundsX.right - this.enemyWidth;
 
     this.enemies.setVelocityX(this.enemiesSpeed);
   }
@@ -88,9 +117,21 @@ export default class GameScene extends Scene {
   #updatePlayerPos() {
     const { left, right } = this.cursor;
 
-    if (left.isDown) this.player.setVelocityX(-500);
-    else if (right.isDown) this.player.setVelocityX(500);
-    else this.player.setVelocity(0);
+    if (left.isDown && this.player.x >= this.enemiesBoundsX.left) {
+      this.player.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE);
+      this.player.setAngle(-this.PLAYER_MOVMENT_ANGLE);
+      this.player.setVelocityX(-this.playerSpeed);
+      this.player.flipX = true;
+    } else if (right.isDown && this.player.x <= this.enemiesBoundsX.right) {
+      this.player.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE);
+      this.player.setAngle(this.PLAYER_MOVMENT_ANGLE);
+      this.player.setVelocityX(this.playerSpeed);
+      this.player.flipX = false;
+    } else {
+      this.player.setAngle(0);
+      this.player.setScale(this.PLAYER_SCALE);
+      this.player.setVelocity(0);
+    }
   }
 
   #handleEnemyBoundiresCollision() {
@@ -107,10 +148,11 @@ export default class GameScene extends Scene {
 
   #moveEnemiesDown() {
     if (this.disableProgress) return;
-
     this.enemiesLevel++;
+    
     this.enemies.getChildren().forEach(child => {
-      child.body.y = child.body.y + this.enemyHeight + this.ENEMIES_SPACING;
+      child.y += (this.enemyHeight + this.ENEMIES_SPACING) / 2;
+      child.flipX = !child.flipX;
     });
     this.enemiesSpeed += 10;
   }
