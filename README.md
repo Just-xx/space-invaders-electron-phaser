@@ -26,7 +26,7 @@ In this game, the player controls a spaceship at the bottom of the screen, taske
 -   **Left Arrow**: Move the ship to the left.
 -   **Right Arrow**: Move the ship to the right.
 
-## Technologie
+## Tech
 
 -   [Phaser 3](https://phaser.io/phaser3)
 -   [Electron](https://www.electronjs.org/)
