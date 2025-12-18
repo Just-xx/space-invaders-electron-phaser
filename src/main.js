@@ -52,11 +52,12 @@ const config = {
   width: 1920,
   height: 1080,
   canvas: gameCanvas,
+  // transparent: true,
   physics: {
     default: "arcade",
     arcade: {
-      gravity: {y: 200},
-      // debug: true,
+      gravity: { y: 200 },
+      debug: false,
     },
   },
   scene: [],
@@ -65,13 +66,17 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
     autoRound: true,
   },
+  fps: {
+    target: 60,
+    forceSetTimeOut: false,
+    limit: 0,
+  }
 };
 
 const game = new Phaser.Game(config);
 game.scene.add("scene-game", GameScene, false);
 
 mainMenu.onStart(() => {
-
   gameCanvas.style.opacity = 1;
   gameCanvas.style.zIndex = 1000;
 
