@@ -1,8 +1,9 @@
-import { Scene } from "phaser";
-import playerImageUrl from "../assets/game/player.png";
-import BulletsGroup from "../classes/BulletsGroup";
+import {Scene} from "phaser";
+
 import PlayerSprite from "../classes/PlayerSprite";
 import EnemiesGroup from "../classes/EnemiesGroup";
+
+import playerImageUrl from "../assets/game/player.png";
 
 import bullet0ImageUrl from "../assets/game/bullet_0.png";
 import bullet1ImageUrl from "../assets/game/bullet_1.png";
@@ -17,7 +18,7 @@ import enemy6ImageUrl from "../assets/game/enemy_6.png";
 
 export default class GameScene extends Scene {
   constructor() {
-    super({ key: "scene-game" });
+    super({key: "scene-game"});
 
     // spirtes and groups
     this.player;
@@ -26,11 +27,12 @@ export default class GameScene extends Scene {
 
     this.cursor;
 
-
-    this.boundsX = { left: 128, right: 1792 }; // subtract from right value of enemy actaul width
-    this.boundsY = { top: 128, bottom: 1000 };
+    // x and y limits of sprites
+    this.boundsX = {left: 128, right: 1792};
+    this.boundsY = {top: 128, bottom: 1000};
 
     this.disableProgress = false;
+    this.level = 1;
   }
 
   preload() {
@@ -39,7 +41,7 @@ export default class GameScene extends Scene {
     // bullets
     this.load.image("bullet-type1", bullet1ImageUrl);
     this.load.image("bullet", bullet0ImageUrl);
-    
+
     // enemies types
     this.load.image("enemy-type0", enemy0ImageUrl);
     this.load.image("enemy-type1", enemy1ImageUrl);
@@ -51,18 +53,60 @@ export default class GameScene extends Scene {
   }
 
   create() {
+    // inputs
     this.cursor = this.input.keyboard.createCursorKeys();
     this.createBoundiresLines();
 
+    // sprites
     this.player = new PlayerSprite(this, 1920 / 2, 1080 - 128, this.enemiesBoundsX);
     this.enemies = new EnemiesGroup(this);
 
+    // collison detection
     this.physics.add.overlap(this.player.bullets, this.enemies, this.enemyHit, null, this);
-    this.physics.add.overlap(this.player, this.enemies, this.gameOver, null, this);
+    this.physics.add.overlap(this.player, this.enemies.bullets, this.playerHit, null, this);
+
+    this.updateUI();
+  }
+
+  updateUI() {
+    this.events.emit("updateUI", {lives: this.player.lives, score: this.player.score, level: this.level});
+  }
+
+  enemyHit(bullet, enemy) {
+    bullet.onHit();
+    const enemyKilled = enemy.onHit(10);
+
+    if (enemyKilled) {
+      this.player.addScore();
+      this.updateUI();
+    }
+  }
+
+  playerHit(player, bullet) {
+    bullet.onHit();
+    player.onHit(bullet);
+    this.updateUI();
+
+    if (player.lives <= 0) {
+      this.gameOver();
+    }
   }
 
   gameOver() {
     this.enemies.gameOver();
+    this.player.gameOver();
+    this.updateUI();
+  }
+
+  handleEnemiesReachPlayer() {
+    if (this.player.lives <= 0) return;
+    const enemies = this.enemies.getChildren();
+    if (enemies.length && this.player.y <= enemies.at(-1).y) this.gameOver();
+  }
+
+  update() {
+    this.enemies.update();
+    this.handleEnemiesReachPlayer();
   }
 
   createBoundiresLines() {
@@ -77,14 +121,5 @@ export default class GameScene extends Scene {
     graphicsBoundiresLines.moveTo(this.boundsX.right, this.boundsY.top);
     graphicsBoundiresLines.lineTo(this.boundsX.right, this.boundsY.bottom);
     graphicsBoundiresLines.strokePath();
-  }
-
-  update() {
-    this.enemies.update();
-  }
-
-  enemyHit(bullet, enemy) {
-    bullet.disableBody(true, true);
-    enemy.onHit(10);
   }
 }

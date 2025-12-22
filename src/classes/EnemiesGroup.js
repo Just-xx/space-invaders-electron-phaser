@@ -1,52 +1,6 @@
 import EnemySprite from "./EnemySprite";
-import sizes from "../constants/sizes";
 import BulletsGroup from "./BulletsGroup";
-
-const ENEMIES_SCHEME_LVL1 = [
-  [
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-  ],
-  [
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-    [4, 31],
-  ],
-  [
-    [1, 15],
-    [1, 15],
-    [1, 15],
-    [1, 15],
-    [1, 15],
-    [1, 15],
-    [1, 15],
-  ],
-  [
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-  ],
-  [
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-    [0, 1],
-  ],
-];
+import { ENEMIES_SCHEME_LVL1 } from '../constants/ENEMIES_SCHEMES'
 
 class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   constructor(scene, scheme, startVelocity) {
@@ -64,11 +18,17 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.depthLevel = 0;
 
     this.bullets = new BulletsGroup(this.scene, "down", true, "bullet-type1");
+    this.canShoot = true;
 
-    this.#createEnemies();
+    this.createEnemies();
   }
 
-  #createEnemies() {
+  update() {
+    this.#handleBoundsCollsion();
+    if (this.canShoot && this.getChildren().length) this.autoShooting();
+  }
+
+  createEnemies() {
     this.lastEnemyY = 0;
     this.lastEnemyX = 0;
 
@@ -87,8 +47,10 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   }
 
   #addEnemy(enemyInfo, i, j) {
+
     const type = enemyInfo[0];
     const health = enemyInfo[1];
+    const shootingChance = enemyInfo[2] || 150;
 
     let x = this.startX;
     let y = this.startY;
@@ -103,7 +65,7 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
       y = this.lastEnemyY;
     }
 
-    const enemy = new EnemySprite(this.scene, x, y, type, health);
+    const enemy = new EnemySprite(this.scene, x, y, type, health, shootingChance);
 
     this.lastEnemyDisplayWidth = enemy.displayWidth;
     this.lastEnemyDisplayHeight = enemy.displayHeight;
@@ -180,11 +142,6 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.velocity += 20;
   }
 
-  update() {
-    this.#handleBoundsCollsion();
-    this.autoShooting();
-  }
-
   autoShooting() {
     const childs = this.getChildren();
     const randomEnemyIndex = Phaser.Math.Between(0, childs.length - 1);
@@ -193,7 +150,8 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   }
 
   gameOver() {
-    this.setVelocityX(0);
+    this.canShoot = false;
+    this.scene.disableProgress = true;
   }
 }
 

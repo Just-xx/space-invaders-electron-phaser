@@ -1,18 +1,13 @@
 import Bullet from "./BulletSprite";
 
 class Bullets extends Phaser.Physics.Arcade.Group {
-  constructor(scene, direction = 'up', spread = false, bulletTexture = 'bullet') {
+  constructor(scene) {
     super(scene.physics.world, scene);
     this.scene = scene;
 
-    // properties
+    // properties for player shots
     this.shotPossible = true;
     this.cooldown = 500; // in ms
-
-    // related to autoshooting
-    this.direction = direction;
-    this.spread = spread;
-    this.bulletTexture = bulletTexture;
 
     this.classType = Bullet;
   }
@@ -25,7 +20,7 @@ class Bullets extends Phaser.Physics.Arcade.Group {
     const bullet = this.get(x, y);
 
     if (bullet) {
-      bullet.fire(x, y, this.direction, this.spread, this.bulletTexture);
+      bullet.fire(x, y);
     }
 
     this.shotPossible = false;
@@ -40,7 +35,7 @@ class Bullets extends Phaser.Physics.Arcade.Group {
       const bullet = this.get(x, y);
 
       if (bullet) {
-        bullet.fire(x, y, this.direction, this.spread, this.bulletTexture);
+        bullet.enemyFire(x, y);
       }
     }
   }
