@@ -1,6 +1,9 @@
-import {Scene} from "phaser";
+import {RIGHT, Scene} from "phaser";
+import btnUrl from "../assets/game/btn_var_0.png";
+import GameOverNode from "../classes/GameOverNode";
+import LevelCompleteNode from "../classes/LevelCompleteNode";
 
-export default class UIScene extends Scene {
+class UIScene extends Scene {
   constructor() {
     super({key: "scene-ui", active: true});
 
@@ -9,10 +12,18 @@ export default class UIScene extends Scene {
     this.lives = 3;
     this.level = 0;
 
+    this.mainMenu = null;
+
     this.elementsSpacing = 256;
   }
 
-  preload() {}
+  init(mainMenu) {
+    this.mainMenu = mainMenu;
+  }
+
+  preload() {
+    this.load.image("restart-btn", btnUrl);
+  }
 
   create() {
     const gameScene = this.scene.get("scene-game");
@@ -42,6 +53,8 @@ export default class UIScene extends Scene {
     this.levelText.setOrigin(0.5, 0.5);
 
     gameScene.events.on("updateUI", data => {
+      const prevLvl = this.level || 1;
+
       this.score = data.score;
       this.lives = data.lives;
       this.level = data.level;
@@ -51,17 +64,66 @@ export default class UIScene extends Scene {
       this.levelText.setText(`Poziom: ${this.level}`);
 
       if (this.lives <= 0) this.gameOver();
+      if (prevLvl < data.level) this.levelComplete();
+    });
+
+    // game over screen handling
+    this.gameOverNode = new GameOverNode();
+
+    this.gameOverNode.onRestart(() => {
+      this.gameOverNode.hide();
+      this.events.emit("restart");
+    });
+
+    this.gameOverNode.onReturn(() => this.onReturn());
+
+    // level complete screen
+    this.levelCompleteNode = new LevelCompleteNode();
+
+    this.levelCompleteNode.onNextLevelClick(() => {
+      this.levelCompleteNode.hide();
+      this.events.emit("nextLevelStart");
+    });
+
+    this.levelCompleteNode.onReturn(() => this.onReturn());
+  }
+
+  fadeIn() {
+    this.tweens.add({
+      targets: [this.scoreText, this.levelText, this.livesText],
+      alpha: {from: 0, to: 1},
+      duration: 2400,
+      ease: "EaseIn",
     });
   }
 
   gameOver() {
-    const centerX = this.scale.width / 2;
-    const centerY = this.scale.height / 2;
+    this.gameOverNode.setLevel(this.level);
+    this.gameOverNode.setScore(this.score);
+    this.gameOverNode.setBestScore(1000); // TODO:
+    this.gameOverNode.show();
+  }
 
-    this.gameOverText = this.add.text(centerX, centerY, "Koniec gry", {
-      font: "600 42px Orbitron",
-      fill: "#e3e3e3"
-    })
-    this.gameOverText.setOrigin(0.5, 0.5);
+  levelComplete() {
+    this.levelCompleteNode.setLevel(this.level - 1);
+    this.levelCompleteNode.setScore(this.score);
+    this.levelCompleteNode.show();
+  }
+
+  onReturn() {
+    this.mainMenu.show();
+    this.gameOverNode.hide();
+    this.levelCompleteNode.hide();
+
+    // emit event
+    this.events.emit("return");
+
+    // deactivate all scenes
+    this.scene.pause("scene-ui");
+    this.scene.pause("scene-game");
+    this.scene.setVisible(false, "scene-game");
+    this.scene.setVisible(false, "scene-ui");
   }
 }
+
+export default UIScene;

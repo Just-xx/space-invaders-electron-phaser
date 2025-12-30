@@ -3,8 +3,8 @@ import GameScene from "./scenes/GameScene";
 import UIScene from "./scenes/UIScene";
 import MainMenu from "./classes/MainMenu";
 
-const mainMenu = new MainMenu();
 const gameCanvas = document.querySelector("#game-canvas");
+
 
 const config = {
   type: Phaser.WEBGL,
@@ -30,18 +30,19 @@ const config = {
     forceSetTimeOut: false,
     limit: 0,
   },
+  parent: "game",
+  dom: {
+    createContainer: true,
+  },
 };
 
 const game = new Phaser.Game(config);
-
-function fadeOutMainMenu() {
-  gameCanvas.style.opacity = 1;
-  gameCanvas.style.zIndex = 1000;
-}
+const mainMenu = new MainMenu();
 
 mainMenu.onStart(() => {
-  fadeOutMainMenu();
-  game.scene.start("scene-game");
+  gameCanvas.style.opacity = 1;
+  game.scene.start('scene-game');
+  game.scene.start('scene-ui', mainMenu);
 });
 
 // document.querySelector('#menu-start-btn').dispatchEvent(new Event('click'));

@@ -11,7 +11,7 @@ const ENEMY_TYPES = [
 const ENEMIES_SCALES = [0.1, 0.09, 0.14, 0.1, 0.19, 0.23, 0.19];
 
 class EnemySprite extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, enemyType, health = 100, shootingChance = 100) {
+  constructor(scene, x, y, enemyType, health = 100) {
     super(scene, x, y, ENEMY_TYPES[enemyType]);
 
     scene.add.existing(this);
@@ -23,32 +23,27 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     this.maxHealth = health;
     this.health = this.maxHealth;
     this.healthBarActive = false;
-    this.shootingChance = shootingChance;
 
     this.flipTime = 1000;
     this.timeToFlip = this.flipTime;
+
+    this.body.allowGravity = false;
+    this.setOrigin(0, 0);
+    this.setScale(ENEMIES_SCALES[this.enemyType]);
 
     this.healthBar = this.scene.add.graphics();
     this.healthBar.setVisible(false);
 
     this.particles = this.scene.add.particles(0, 0, "bullet-type1", {
-      speed: { min: 100, max: 300 },
-      angle: { min: 0, max: 360 },
-      scale: { start: 0.1, end: 0 },
-      lifespan: { min: 200, max: 500 },
+      speed: {min: 100, max: 300},
+      angle: {min: 0, max: 360},
+      scale: {start: 0.1, end: 0},
+      lifespan: {min: 200, max: 500},
       gravityY: 0,
       blendMode: "ADD",
       tint: [0xff0000, 0xffa500, 0xffff00],
       emitting: false,
     });
-
-    this.#init();
-  }
-
-  #init() {
-    this.body.allowGravity = false;
-    this.setOrigin(0, 0);
-    this.setScale(ENEMIES_SCALES[this.enemyType]);
   }
 
   #updateHealthBar() {
@@ -63,19 +58,21 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     // healthbar bg
     const width = this.displayWidth;
     const height = 6;
-    
+
     this.healthBar.fillStyle(0x000000, 0.5);
     this.healthBar.fillRect(0, -height - 2, width, height);
 
     // healthabr value
     const healthPercentage = this.health / this.maxHealth;
     const healthBarColor = healthPercentage > 0.6 ? 0x00ff00 : healthPercentage > 0.3 ? 0xffff00 : 0xff0000;
-    
+
     this.healthBar.fillStyle(healthBarColor, 1);
     this.healthBar.fillRect(0, -height - 2, width * healthPercentage, height);
   }
 
   onHit(damage) {
+    if (this.health <= 0) return;
+
     this.health -= damage;
     if (this.health < 0) {
       this.health = 0;
@@ -88,6 +85,7 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
       this.scene.time.delayedCall(100, () => this.destroy());
       return true;
     }
+
     return false;
   }
 

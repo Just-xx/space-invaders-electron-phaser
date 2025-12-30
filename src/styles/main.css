@@ -31,6 +31,7 @@ html {
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.25);
   transition: background-color 400ms ease-in;
+  position: relative;
 }
 
 .title-wrapper {
@@ -80,6 +81,7 @@ html {
   align-items: center;
   gap: 16px;
   margin-right: 32px;
+  z-index: 1000;
 }
 
 .menu-btns-wrapper {
@@ -95,14 +97,13 @@ html {
   text-shadow: var(--text-glow-shadow);
 }
 
-.menu-btn {
-  width: 80%;
+.menu-btn, .btn {
   font-family: "Orbitron";
   font-weight: 600;
   font-size: 1.15rem;
   color: rgba(255, 255, 255, 0.9);
   background-color: rgba(196, 159, 255, 0.3);
-  padding: 16px 24px;
+  padding: 16px 32px;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -113,7 +114,11 @@ html {
   width: 85%;
 }
 
-.menu-btn:hover {
+.btn {
+  width: fit-content;
+}
+
+.menu-btn:hover, .btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.5);
   transform: scale(1.02);
@@ -152,4 +157,48 @@ html {
   top: 0;
   opacity: 0;
   transition: opacity 1s ease-in-out;
+}
+
+
+/* Nodes styles */
+.game-over-node-wrapper,
+.lc-node-wrapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  padding: 48px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+
+.game-over-node-title,
+.lc-node-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  
+}
+
+.game-over-node-info-wrapper,
+.lc-node-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  font-weight: 500;
+  gap: 16px;
+}
+
+.game-over-node-btns-wrapper,
+.lc-node-btns-wrapper {
+  display: flex;
+  gap: 16px;
+}
+
+.game-over-node-btns-wrapper .btn,
+.lc-node-btns-wrapper .btn {
+  font-size: .95rem;
 }

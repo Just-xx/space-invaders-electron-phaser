@@ -15,7 +15,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.PLAYER_SCALE = 0.13;
     this.PLAYER_MOVMENT_ANGLE = 5;
 
-    this.lives = 3;
+    this.lives = 1;
     this.score = 0;
     this.inputsActive = true;
 
@@ -25,7 +25,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.cursor = this.scene.input.keyboard.createCursorKeys();
 
     this.bullets = new BulletsGroup(this.scene);
+    this.createParticles();
+  }
 
+  createParticles() {
     this.destroyParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       speed: {min: 150, max: 350},
       angle: {min: 0, max: 360},
@@ -47,6 +50,35 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       tint: [0x80ecff, 0x389deb, 0xf9180ff],
       emitting: false,
     });
+
+    this.thrustParticles = this.scene.add.particles(0, 0, "bullet-type1", {
+      frequency: 1,
+      speed: {min: 450, max: 600},
+      angle: {min: 80, max: 100},
+      scale: {start: 0.08, end: 0},
+      lifespan: {min: 50, max: 80},
+      alpha: 0.3,
+      gravityY: 0,
+      blendMode: "ADD",
+      tint: [0xffe482, 0xffad3d, 0xff7a00],
+      emitting: false,
+    });
+
+    this.stationaryParticles = this.scene.add.particles(0, 0, "bullet-type1", {
+      frequency: 20,
+      speed: {min: 100, max: 200},
+      angle: {min: 80, max: 100},
+      scale: {start: 0.08, end: 0},
+      lifespan: {min: 20, max: 40},
+      alpha: 0.5,
+      gravityY: 0,
+      blendMode: "ADD",
+      tint: [0xffe482, 0xffad3d, 0xff7a00],
+      emitting: false,
+    });
+
+    this.thrustParticles.startFollow(this, this.displayWidth / 2, this.displayHeight + 15);
+    this.stationaryParticles.startFollow(this, this.displayWidth / 2, this.displayHeight + 15);
   }
 
   setStationary() {
@@ -58,7 +90,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    if (this.lives <= 0 || !this.inputsActive) return this.setStationary();
+    if (this.lives <= 0 || !this.inputsActive || this.scene.disableProgress) {
+      this.thrustParticles.stop();
+      this.stationaryParticles.stop();
+      return this.setStationary();
+    }
 
     const {left, right} = this.cursor;
 
@@ -67,18 +103,29 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.setAngle(-this.PLAYER_MOVMENT_ANGLE);
       this.setVelocityX(-this.playerSpeed);
       this.flipX = true;
+
+      this.stationaryParticles.stop();
+      this.thrustParticles.start();
     } else if (right.isDown && this.x <= this.boundsX.right - this.displayWidth) {
       this.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE);
       this.setAngle(this.PLAYER_MOVMENT_ANGLE);
       this.setVelocityX(this.playerSpeed);
       this.flipX = false;
-    } else this.setStationary();
+
+      this.stationaryParticles.stop();
+      this.thrustParticles.start();
+    } else {
+      this.setStationary();
+
+      this.thrustParticles.stop();
+      this.stationaryParticles.start();
+    }
 
     this.bullets.handleInput(this);
   }
 
-  addScore() {
-    this.score += 20;
+  addScore(amount = 20) {
+    this.score += amount;
   }
 
   gameOver() {
@@ -86,6 +133,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.inputsActive = false;
     this.setImmovable(true);
     this.#destroyEffect();
+    this.thrustParticles.stop();
   }
 
   #respawnEffect(bullet) {

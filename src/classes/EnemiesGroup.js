@@ -1,9 +1,8 @@
 import EnemySprite from "./EnemySprite";
 import BulletsGroup from "./BulletsGroup";
-import { ENEMIES_SCHEME_LVL1 } from '../constants/ENEMIES_SCHEMES'
 
 class EnemiesGroup extends Phaser.Physics.Arcade.Group {
-  constructor(scene, scheme, startVelocity) {
+  constructor(scene, level) {
     super(scene.physics.world, scene);
     this.scene = scene;
 
@@ -13,10 +12,12 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.startX = this.scene.boundsX.left;
     this.startY = this.scene.boundsY.top;
 
-    this.startVelocity = startVelocity || 100;
-    this.levelScheme = scheme || ENEMIES_SCHEME_LVL1;
+    this.shootChance = level.shootChance;
+    this.startVelocity = level.speed || 100;
+    this.levelScheme = level.scheme;
     this.depthLevel = 0;
 
+    this.lastVelocity = this.startVelocity;
     this.bullets = new BulletsGroup(this.scene, "down", true, "bullet-type1");
     this.canShoot = true;
 
@@ -26,6 +27,22 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   update() {
     this.#handleBoundsCollsion();
     if (this.canShoot && this.getChildren().length) this.autoShooting();
+
+    // stop if progress is disabled
+    if (!this.getChildren().length) return;
+    const enemiesVelocity = this.getChildren()[0].body.velocity.x;
+
+    if (this.scene.disableProgress && enemiesVelocity !== 0) {
+      this.lastVelocity = enemiesVelocity;
+      this.getChildren().forEach(e => e.setVelocityX(0));
+      this.canShoot = false;
+    }
+
+    // resume if progress is enabled again
+    if (!this.scene.disableProgress && enemiesVelocity === 0) {
+      this.getChildren().forEach(e => e.setVelocityX(this.lastVelocity));
+      this.canShoot = true;
+    }
   }
 
   createEnemies() {
@@ -47,7 +64,6 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   }
 
   #addEnemy(enemyInfo, i, j) {
-
     const type = enemyInfo[0];
     const health = enemyInfo[1];
     const shootingChance = enemyInfo[2] || 150;
@@ -139,13 +155,13 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.getChildren().forEach(child => {
       child.y += this.lastEnemyDisplayHeight + this.spacingY;
     });
-    this.velocity += 20;
+    this.velocity += 30;
   }
 
   autoShooting() {
     const childs = this.getChildren();
     const randomEnemyIndex = Phaser.Math.Between(0, childs.length - 1);
-    const chance = childs[randomEnemyIndex].shootingChance;
+    const chance = this.shootChance;
     this.bullets.handleEnemyFire(childs[randomEnemyIndex], chance);
   }
 
