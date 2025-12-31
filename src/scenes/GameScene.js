@@ -16,13 +16,19 @@ import enemy3ImageUrl from "../assets/game/enemy_3.png";
 import enemy4ImageUrl from "../assets/game/enemy_4.png";
 import enemy5ImageUrl from "../assets/game/enemy_5.png";
 import enemy6ImageUrl from "../assets/game/enemy_6.png";
+
+import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
+
+import StarfiledBg from "../classes/StarfieldBg";
+
 import EscapeMenuNode from "../classes/EscapeMenuNode";
+import ObstaclesGroup from "../classes/ObstaclesGroup";
 
 export default class GameScene extends Scene {
   constructor() {
     super({key: "scene-game"});
 
-    // spirtes and groups
+    // sprites and groups
     this.player;
     this.bullets;
     this.enemies;
@@ -56,6 +62,11 @@ export default class GameScene extends Scene {
     this.load.image("enemy-type4", enemy4ImageUrl);
     this.load.image("enemy-type5", enemy5ImageUrl);
     this.load.image("enemy-type6", enemy6ImageUrl);
+
+    this.load.image("obstacle-part", obstaclePartImageUrl);
+
+    // generate starfield texture
+    StarfiledBg.createStarfieldTexture(this);
   }
 
   create() {
@@ -67,9 +78,16 @@ export default class GameScene extends Scene {
     this.player = new PlayerSprite(this, 1920 / 2, 1080 - 128, this.enemiesBoundsX);
     this.enemies = new EnemiesGroup(this, this.levelController.getCurrentLevel());
 
-    // Collison detection
+    this.obstaclesGroup = new ObstaclesGroup(this);
+
+    // Collision detection
     this.physics.add.overlap(this.player.bullets, this.enemies, this.enemyHit, null, this);
     this.physics.add.overlap(this.player, this.enemies.bullets, this.playerHit, null, this);
+
+    // Collision detection (obstacles <-> other)
+    this.physics.add.overlap(this.obstaclesGroup, this.enemies.bullets, this.obstacleBulletHit, null, this);
+    this.physics.add.overlap(this.obstaclesGroup, this.player.bullets, this.obstacleBulletHit, null, this);
+    this.physics.add.overlap(this.obstaclesGroup, this.enemies, o => o.onHit(), null, this);
 
     // update HUD (UI)
     this.updateUI();
@@ -84,12 +102,11 @@ export default class GameScene extends Scene {
     // fade in effect
     this.fadeIn();
 
-    this.createStarfieldTexture();
-    this.createStarfield();
+    this.starfiled = new StarfiledBg(this);
 
     // escape menu
     this.escapeMenuNode = new EscapeMenuNode();
-    
+
     this.escapeMenuNode.onReturn(() => {
       this.escapeMenuNode.hide();
       this.UIScene.onReturn();
@@ -105,40 +122,6 @@ export default class GameScene extends Scene {
         this.escapeMenuNode.hide();
         this.scene.resume();
       }
-    });
-
-    
-  }
-
-  createStarfieldTexture() {
-    const rt = this.make.graphics({x: 0, y: 0, add: false});
-
-    rt.fillStyle(0x000000, 0);
-    rt.fillRect(0, 0, this.scale.width, this.scale.height);
-
-    for (let i = 0; i < 200; i++) {
-      const x = Phaser.Math.Between(0, this.scale.width);
-      const y = Phaser.Math.Between(0, this.scale.height);
-      const size = Phaser.Math.FloatBetween(0.5, 2);
-      const alpha = Phaser.Math.FloatBetween(0.5, 1);
-
-      rt.fillStyle(0xffffff, alpha);
-      rt.fillPoint(x, y, size);
-    }
-
-    rt.generateTexture("starfield", this.scale.width, this.scale.height);
-  }
-
-  createStarfield() {
-    const {width, height} = this.scale;
-
-    this.bgBack = this.add.tileSprite(0, 0, width, height, "starfield").setOrigin(0, 0).setDepth(-10).setAlpha(0.4);
-
-    this.bgFront = this.add.tileSprite(0, 0, width, height, "starfield").setOrigin(0, 0).setDepth(-5).setAlpha(0.6);
-
-    this.scale.on("resize", size => {
-      this.bgBack.setSize(size.width, size.height);
-      this.bgFront.setSize(size.width, size.height);
     });
   }
 
@@ -210,13 +193,15 @@ export default class GameScene extends Scene {
     if (enemies.length && this.player.y <= enemies.at(-1).y) this.gameOver();
   }
 
+  obstacleBulletHit(obstaclePart, bullet) {
+    obstaclePart.onHit(obstaclePart);
+    bullet.onHit();
+  }
+
   update(time, delta) {
     this.enemies.update();
     this.checkEnemyInvasion();
-
-    const speed = 0.02;
-    this.bgBack.tilePositionY -= speed * delta;
-    this.bgFront.tilePositionY -= speed * 3 * delta;
+    this.starfiled.update(time, delta);
   }
 
   fadeIn() {

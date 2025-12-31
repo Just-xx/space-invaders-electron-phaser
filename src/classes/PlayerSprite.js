@@ -15,7 +15,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.PLAYER_SCALE = 0.13;
     this.PLAYER_MOVMENT_ANGLE = 5;
 
-    this.lives = 1;
+    this.lives = 3;
     this.score = 0;
     this.inputsActive = true;
 

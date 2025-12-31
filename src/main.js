@@ -45,4 +45,4 @@ mainMenu.onStart(() => {
   game.scene.start('scene-ui', mainMenu);
 });
 
-// document.querySelector('#menu-start-btn').dispatchEvent(new Event('click'));
+document.querySelector('#menu-start-btn').dispatchEvent(new Event('click'));

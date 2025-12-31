@@ -27,7 +27,7 @@ class MainMenu {
     }, 300);
 
     setTimeout(() => {
-      this.game.style.backgroundColor = "rgba(0, 0, 0, 0.95)";
+      this.game.style.backgroundColor = "rgba(0, 0, 0, 0.98)";
     }, 450);
   }
 
