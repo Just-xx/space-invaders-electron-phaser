@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 import GameScene from "./scenes/GameScene";
 import UIScene from "./scenes/UIScene";
 import MainMenuController from "./classes/controllers/MainMenuController";

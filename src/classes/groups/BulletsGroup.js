@@ -7,7 +7,7 @@ class BulletsGroup extends Phaser.Physics.Arcade.Group {
 
     // properties for player shots
     this.shotPossible = true;
-    this.cooldown = 0; // in ms
+    this.cooldown = 400; // in ms
 
     this.classType = Bullet;
   }

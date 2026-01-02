@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 import BulletsGroup from "../groups/BulletsGroup";
 
 class UfoSprite extends Phaser.Physics.Arcade.Sprite {

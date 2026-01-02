@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 
 class Bullet extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
