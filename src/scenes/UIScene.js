@@ -1,7 +1,8 @@
-import {RIGHT, Scene} from "phaser";
+import {Game, RIGHT, Scene} from "phaser";
 import btnUrl from "../assets/game/btn_var_0.png";
-import GameOverNode from "../classes/GameOverNode";
-import LevelCompleteNode from "../classes/LevelCompleteNode";
+import GameOverComponent from "../classes/components/GameOverComponent";
+import LevelCompleteComponent from "../classes/components/LevelCompleteComponent";
+import GameWonComponent from "../classes/components/GameWonComponent";
 
 class UIScene extends Scene {
   constructor() {
@@ -10,7 +11,7 @@ class UIScene extends Scene {
     this.score = 0;
     this.maxScore = 0;
     this.lives = 3;
-    this.level = 0;
+    this.level = 1;
 
     this.mainMenu = null;
 
@@ -52,23 +53,10 @@ class UIScene extends Scene {
 
     this.levelText.setOrigin(0.5, 0.5);
 
-    gameScene.events.on("updateUI", data => {
-      const prevLvl = this.level || 1;
-
-      this.score = data.score;
-      this.lives = data.lives;
-      this.level = data.level;
-
-      this.scoreText.setText(`Wynik: ${this.score}`);
-      this.livesText.setText(`Życia: ${this.lives}`);
-      this.levelText.setText(`Poziom: ${this.level}`);
-
-      if (this.lives <= 0) this.gameOver();
-      if (prevLvl < data.level) this.levelComplete();
-    });
+    this.level = gameScene.levelController.getCurrentLevel();
 
     // game over screen handling
-    this.gameOverNode = new GameOverNode();
+    this.gameOverNode = new GameOverComponent();
 
     this.gameOverNode.onRestart(() => {
       this.gameOverNode.hide();
@@ -78,14 +66,39 @@ class UIScene extends Scene {
     this.gameOverNode.onReturn(() => this.onReturn());
 
     // level complete screen
-    this.levelCompleteNode = new LevelCompleteNode();
+    this.levelCompleteComponent = new LevelCompleteComponent();
 
-    this.levelCompleteNode.onNextLevelClick(() => {
-      this.levelCompleteNode.hide();
+    this.levelCompleteComponent.onNextLevelClick(() => {
+      this.levelCompleteComponent.hide();
       this.events.emit("nextLevelStart");
     });
 
-    this.levelCompleteNode.onReturn(() => this.onReturn());
+    this.levelCompleteComponent.onReturn(() => this.onReturn());
+
+    // game won screen
+    this.gameWonComponent = new GameWonComponent();
+    this.gameWonComponent.onReturn(() => this.onReturn());
+  }
+
+  updateUI(data) {
+    if (!this.scoreText) return;
+
+    this.score = data.score;
+    this.lives = data.lives;
+    this.level = data.level;
+
+    this.scoreText.setText(`Wynik: ${this.score}`);
+    this.livesText.setText(`Życia: ${this.lives}`);
+    this.levelText.setText(`Poziom: ${this.level}`);
+
+    if (this.lives <= 0) this.showGameOverComponent();
+    if (data.levelComplete) {
+      this.showLevelComponent();
+      this.level--;
+      this.levelText.setText(`Poziom: ${this.level}`);
+    }
+
+    if (data.gameWon) this.showGameWonComponent();
   }
 
   fadeIn() {
@@ -97,23 +110,30 @@ class UIScene extends Scene {
     });
   }
 
-  gameOver() {
+  updateListener() {}
+
+  showGameOverComponent() {
     this.gameOverNode.setLevel(this.level);
     this.gameOverNode.setScore(this.score);
-    this.gameOverNode.setBestScore(1000); // TODO:
     this.gameOverNode.show();
   }
 
-  levelComplete() {
-    this.levelCompleteNode.setLevel(this.level - 1);
-    this.levelCompleteNode.setScore(this.score);
-    this.levelCompleteNode.show();
+  showLevelComponent() {
+    this.levelCompleteComponent.setLevel(this.level - 1);
+    this.levelCompleteComponent.setScore(this.score);
+    this.levelCompleteComponent.show();
+  }
+
+  showGameWonComponent() {
+    this.gameWonComponent.show();
   }
 
   onReturn() {
+    // hide all possible components
     this.mainMenu.show();
     this.gameOverNode.hide();
-    this.levelCompleteNode.hide();
+    this.levelCompleteComponent.hide();
+    this.gameWonComponent.hide();
 
     // emit event
     this.events.emit("return");

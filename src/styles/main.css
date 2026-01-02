@@ -60,9 +60,10 @@ html {
   font-family: "Exo";
   color: var(--secondary);
 
-  
   font-weight: 700;
-  text-shadow: 0 0 7px rgba(255, 255, 255, 0.15), 0 0 10px rgba(255, 255, 255, 0.15),
+  text-shadow:
+    0 0 7px rgba(255, 255, 255, 0.15),
+    0 0 10px rgba(255, 255, 255, 0.15),
     0 0 21px rgba(255, 255, 255, 0.151);
   transform: scaleX(1.1);
   letter-spacing: 2px;
@@ -93,11 +94,16 @@ html {
   transition: all 400ms ease-in;
 }
 
+.level-text {
+  font-size: .7rem;
+}
+
 .menu-btn:first-of-type {
   text-shadow: var(--text-glow-shadow);
 }
 
-.menu-btn, .btn {
+.menu-btn,
+.btn {
   font-family: "Orbitron";
   font-weight: 600;
   font-size: 1.15rem;
@@ -118,7 +124,8 @@ html {
   width: fit-content;
 }
 
-.menu-btn:hover, .btn:hover {
+.menu-btn:hover,
+.btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.5);
   transform: scale(1.02);
@@ -147,7 +154,9 @@ html {
 
 .hero-menu-img-wrapper {
   transform: translateX(0%);
-  transition: transform 400ms ease-in, opacity 400ms ease-in;
+  transition:
+    transform 400ms ease-in,
+    opacity 400ms ease-in;
 }
 
 /* Phaser canvas */
@@ -159,10 +168,9 @@ html {
   transition: opacity 1s ease-in-out;
 }
 
-
 /* Nodes styles */
-.game-over-node-wrapper,
-.lc-node-wrapper {
+.node-wrapper,
+.node-wrapper {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -172,33 +180,130 @@ html {
   transform: translate(-50%, -50%);
   z-index: 1000;
   padding: 48px;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.8);
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.game-over-node-title,
-.lc-node-title {
-  font-size: 1.5rem;
+.node-title {
+  font-size: 1.3rem;
   font-weight: 700;
-  
+  text-align: center;
 }
 
-.game-over-node-info-wrapper,
-.lc-node-info-wrapper {
+.node-info-wrapper {
   display: flex;
   flex-direction: column;
-  font-size: 1rem;
-  font-weight: 500;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 400;
   gap: 16px;
+  text-align: center;
 }
 
-.game-over-node-btns-wrapper,
-.lc-node-btns-wrapper {
+.node-info-wrapper b {
+  font-weight: 700;
+}
+
+.node-btns-wrapper {
   display: flex;
   gap: 16px;
 }
 
-.game-over-node-btns-wrapper .btn,
-.lc-node-btns-wrapper .btn {
-  font-size: .95rem;
+.node-btns-wrapper .btn {
+  font-size: 0.85rem;
+}
+
+.node-btns-wrapper {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.lc-node-btns-wrapper {
+  margin-top: 0;
+}
+
+/* Levels View Component */
+.level-view-wrapper {
+  z-index: 100000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 80vw;
+  max-width: 1000px;
+}
+
+.level-view-wrapper h2 {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.level-view-levels-wrapper {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.level-view-levels-wrapper .btn {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-view-levels-wrapper .btn * {
+  pointer-events: none;
+}
+
+.level-view-levels-wrapper .btn span {
+  display: block;
+  z-index: 1;
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
+
+.level-view-levels-wrapper .btn span.lvl-done span {
+  color: #c0ffd3;
+  font-size: .8rem;
+  display: block;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 800;
+}
+
+.level-view-levels-wrapper .btn img {
+  width: 100%;
+  z-index: 0;
+  opacity: .5;
+  transition: 80ms linear opacity;
+  border-top: 3px solid rgba(255, 255, 255, 0.5);
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.level-view-levels-wrapper .btn:hover img {
+  opacity: .7;
+}
+
+.level-view-wrapper .level-view-return-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: .8rem;
+  padding: 10px 24px;
 }

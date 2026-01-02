@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import GameScene from "./scenes/GameScene";
 import UIScene from "./scenes/UIScene";
-import MainMenu from "./classes/MainMenu";
+import MainMenuController from "./classes/controllers/MainMenuController";
 
 const gameCanvas = document.querySelector("#game-canvas");
 
@@ -29,20 +29,19 @@ const config = {
     target: 60,
     forceSetTimeOut: false,
     limit: 0,
-  },
-  parent: "game",
-  dom: {
-    createContainer: true,
-  },
+  }
 };
 
 const game = new Phaser.Game(config);
-const mainMenu = new MainMenu();
+const mainMenuController = new MainMenuController(game);
 
-mainMenu.onStart(() => {
+game.showGameCanvas = () => {
+  const gameCanvas = document.querySelector("#game-canvas");
   gameCanvas.style.opacity = 1;
-  game.scene.start('scene-game');
-  game.scene.start('scene-ui', mainMenu);
-});
+}
 
-document.querySelector('#menu-start-btn').dispatchEvent(new Event('click'));
+mainMenuController.onStart(() => {
+  game.showGameCanvas();
+  game.scene.start('scene-game');
+  game.scene.start('scene-ui', mainMenuController);
+});

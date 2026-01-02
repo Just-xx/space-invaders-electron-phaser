@@ -1,14 +1,13 @@
 import {Scene} from "phaser";
 
-import PlayerSprite from "../classes/PlayerSprite";
-import EnemiesGroup from "../classes/EnemiesGroup";
-import LevelController from "../classes/LevelController";
+import PlayerSprite from "../classes/sprites/PlayerSprite";
+import EnemiesGroup from "../classes/groups/EnemiesGroup";
+import ObstaclesGroup from "../classes/groups/ObstaclesGroup";
+import UfoSprite from "../classes/sprites/UfoSprite";
 
 import playerImageUrl from "../assets/game/player.png";
-
 import bullet0ImageUrl from "../assets/game/bullet_0.png";
 import bullet1ImageUrl from "../assets/game/bullet_1.png";
-
 import enemy0ImageUrl from "../assets/game/enemy_0.png";
 import enemy1ImageUrl from "../assets/game/enemy_1.png";
 import enemy2ImageUrl from "../assets/game/enemy_2.png";
@@ -16,13 +15,12 @@ import enemy3ImageUrl from "../assets/game/enemy_3.png";
 import enemy4ImageUrl from "../assets/game/enemy_4.png";
 import enemy5ImageUrl from "../assets/game/enemy_5.png";
 import enemy6ImageUrl from "../assets/game/enemy_6.png";
-
 import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
+import ufoImageUrl from "../assets/game/ufo.png";
 
-import StarfiledBg from "../classes/StarfieldBg";
-
-import EscapeMenuNode from "../classes/EscapeMenuNode";
-import ObstaclesGroup from "../classes/ObstaclesGroup";
+import StarfiledBg from "../classes/other/StarfieldBg";
+import LevelController from "../classes/controllers/LevelController";
+import EscapeMenuComponent from "../classes/components/EscapeMenuComponent";
 
 export default class GameScene extends Scene {
   constructor() {
@@ -40,11 +38,16 @@ export default class GameScene extends Scene {
     this.boundsY = {top: 128, bottom: 1000};
 
     this.disableProgress = false;
+
     this.levelController = new LevelController();
   }
 
-  init() {
+  init(data) {
     this.disableProgress = false;
+
+    if (data.level) {
+      this.levelController.setCurrentLevel(data.level);
+    }
   }
 
   preload() {
@@ -65,6 +68,8 @@ export default class GameScene extends Scene {
 
     this.load.image("obstacle-part", obstaclePartImageUrl);
 
+    this.load.image("ufo", ufoImageUrl);
+
     // generate starfield texture
     StarfiledBg.createStarfieldTexture(this);
   }
@@ -77,17 +82,23 @@ export default class GameScene extends Scene {
     // Sprites
     this.player = new PlayerSprite(this, 1920 / 2, 1080 - 128, this.enemiesBoundsX);
     this.enemies = new EnemiesGroup(this, this.levelController.getCurrentLevel());
+    this.ufo = new UfoSprite(this, 100, 100);
 
     this.obstaclesGroup = new ObstaclesGroup(this);
 
-    // Collision detection
+    // Collision detection (enemies <-> player)
     this.physics.add.overlap(this.player.bullets, this.enemies, this.enemyHit, null, this);
     this.physics.add.overlap(this.player, this.enemies.bullets, this.playerHit, null, this);
+
+    // Collision detection (ufo <-> player)
+    this.physics.add.overlap(this.player, this.ufo.bullets, this.playerHit, null, this);
+    this.physics.add.overlap(this.player.bullets, this.ufo, this.ufoHit, null, this);
 
     // Collision detection (obstacles <-> other)
     this.physics.add.overlap(this.obstaclesGroup, this.enemies.bullets, this.obstacleBulletHit, null, this);
     this.physics.add.overlap(this.obstaclesGroup, this.player.bullets, this.obstacleBulletHit, null, this);
     this.physics.add.overlap(this.obstaclesGroup, this.enemies, o => o.onHit(), null, this);
+    this.physics.add.overlap(this.obstaclesGroup, this.ufo.bullets, this.obstacleBulletHit, null, this);
 
     // update HUD (UI)
     this.updateUI();
@@ -99,19 +110,22 @@ export default class GameScene extends Scene {
     // on next level start event
     this.UIScene.events.once("nextLevelStart", () => this.nextLevelStart());
 
-    // fade in effect
+    // visuals
     this.fadeIn();
-
     this.starfiled = new StarfiledBg(this);
 
     // escape menu
-    this.escapeMenuNode = new EscapeMenuNode();
+    this.escapeMenuNode = new EscapeMenuComponent();
 
     this.escapeMenuNode.onReturn(() => {
       this.escapeMenuNode.hide();
       this.UIScene.onReturn();
     });
 
+    this.escapeMenuHandler();
+  }
+
+  escapeMenuHandler() {
     this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     this.escapeKey.on("down", () => {
@@ -125,30 +139,43 @@ export default class GameScene extends Scene {
     });
   }
 
-  updateUI() {
-    this.events.emit("updateUI", {
-      lives: this.player.lives,
-      score: this.player.score,
-      level: this.levelController.currentLevel,
-    });
+  updateUI(additionalData) {
+    if (this.UIScene && this.UIScene.scene.isActive()) {
+      this.UIScene.updateUI({
+        lives: this.player.lives,
+        score: this.player.score,
+        level: this.levelController.currentLevel,
+        ...additionalData,
+      });
+    } // try again after delay if scene not active
+    else this.time.delayedCall(50, () => this.updateUI());
   }
 
   // game states actions
   restartLevel() {
+    this.UIScene.scene.restart();
     this.scene.restart();
   }
 
   levelComplete() {
     this.levelController.nextLevel();
     this.disableProgress = true;
-    this.updateUI();
+    this.updateUI({levelComplete: true});
+  }
+
+  gameWon() {
+    this.disableProgress = true;
+    this.levelController.setCurrentAsPassed();
+    this.updateUI({gameWon: true});
   }
 
   nextLevelStart() {
+    this.UIScene.scene.restart();
     this.scene.restart();
   }
 
   gameOver() {
+    this.disableProgress = true;
     this.enemies.gameOver();
     this.player.gameOver();
     this.updateUI();
@@ -160,16 +187,21 @@ export default class GameScene extends Scene {
     bullet.onHit();
     const enemyKilled = enemy.onHit(10);
 
-    if (!enemyKilled) return;
-
-    const scoreAmount = (Math.floor(enemy.maxHealth / 10) + 1) * 10;
-    this.player.addScore(scoreAmount);
-    this.updateUI();
+    if (enemyKilled) {
+      this.enemies.speedup();
+      const scoreAmount = (Math.floor(enemy.maxHealth / 10) + 1) * 10;
+      this.player.addScore(scoreAmount);
+      this.updateUI();
+    }
 
     // all enemies eliminated
-    if (this.enemies.getLength() - 1 <= 0) {
-      this.levelComplete();
-    }
+    if (this.enemies.getLength() <= 0 && this.levelController.currentLevel < 15) this.levelComplete();
+    if (this.enemies.getLength() <= 0 && this.levelController.currentLevel >= 15) this.gameWon();
+  }
+
+  ufoHit(bullet, ufo) {
+    bullet.onHit();
+    ufo.onHit();
   }
 
   // Collision detection
@@ -190,7 +222,8 @@ export default class GameScene extends Scene {
     if (this.disableProgress) return;
     if (this.player.lives <= 0) return;
     const enemies = this.enemies.getChildren();
-    if (enemies.length && this.player.y <= enemies.at(-1).y) this.gameOver();
+    const lastEnemy = enemies.at(-1);
+    if (enemies.length && this.player.y <= lastEnemy.y + lastEnemy.displayHeight) this.gameOver();
   }
 
   obstacleBulletHit(obstaclePart, bullet) {
