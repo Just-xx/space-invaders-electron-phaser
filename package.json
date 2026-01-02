@@ -1,10 +1,13 @@
 {
-  "name": "space-invaders-zal",
+  "name": "space-invaders",
   "version": "1.0.0",
-  "description": "Clasic desktop game space invaders. Made with use of electron.js and phaser. These technologies are essential, electron - makes it possiible to run js scripts natviely, phaser - js game library which simplifies everything.",
+  "description": "Clasic desktop game space invaders. Made with use of electron.js and phaser.js",
   "license": "ISC",
-  "author": "",
-  "main": "main.js",
+  "author": {
+    "name": "Jakub",
+    "email": "kubadreczz@gmail.com"
+  },
+  "main": ".vite/build/main.js",
   "scripts": {
     "dev:vite": "vite src",
     "dev:electron": "electron main.js",
@@ -25,11 +28,11 @@
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron/fuses": "^1.8.0",
     "concurrently": "^9.2.1",
-    "electron": "^39.2.3"
+    "electron": "^39.2.3",
+    "vite": "^7.2.4"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
-    "phaser": "^3.90.0",
-    "vite": "^7.2.4"
+    "phaser": "^3.90.0"
   }
 }

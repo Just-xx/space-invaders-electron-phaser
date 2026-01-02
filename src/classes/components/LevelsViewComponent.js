@@ -1,6 +1,16 @@
+const lvlImgsGlob = import.meta.glob("../../assets/levels/*.{png,jpg,jpeg,svg}", {eager: true});
+
+const lvlImgs = Object.fromEntries(
+  Object.entries(lvlImgsGlob).map(([path, module]) => {
+    return [
+      path.split("/").pop().split(".")[0], // wyciąga "photo" z "./assets/photo.png"
+      module.default,
+    ];
+  })
+);
+
 class LevelsViewComponent {
   constructor(mainMenuController, game) {
-
     this.game = game;
     this.mounted = false;
     this.mainMenuController = mainMenuController;
@@ -52,28 +62,28 @@ class LevelsViewComponent {
       const lvlButton = document.createElement("button");
       lvlButton.dataset.level = i + 1;
       lvlButton.classList.add("btn");
-      if (passedLevels.indexOf(i + 1) > -1) lvlButton.innerHTML = `<span class="lvl-done">${i + 1}<span>ukończony<span><span>`;
+      if (passedLevels.indexOf(i + 1) > -1)
+        lvlButton.innerHTML = `<span class="lvl-done">${i + 1}<span>ukończony<span><span>`;
       else lvlButton.innerHTML = `<span>${i + 1}<span>`;
 
       const image = document.createElement("img");
-      image.src = `./assets/levels/${i + 1}.png`;
+      image.src = lvlImgs[i + 1];
       image.alt = i + 1;
 
       lvlButton.appendChild(image);
 
       this.levelsWrapper.appendChild(lvlButton);
 
-      lvlButton.addEventListener('click', e => this.handleLevelBtnClick(e));
+      lvlButton.addEventListener("click", e => this.handleLevelBtnClick(e));
     }
   }
 
   handleLevelBtnClick(e) {
     const level = e.target.dataset.level;
 
-    this.game.scene.start("scene-game", { level: level });
+    this.game.scene.start("scene-game", {level: level});
     this.game.scene.start("scene-ui", this.mainMenuController);
     this.game.showGameCanvas();
-
 
     this.hide();
     this.mainMenuController.hide();

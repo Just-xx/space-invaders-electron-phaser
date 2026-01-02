@@ -1,9 +1,7 @@
-import {Scene} from "phaser";
-
-import PlayerSprite from "../classes/sprites/PlayerSprite";
-import EnemiesGroup from "../classes/groups/EnemiesGroup";
-import ObstaclesGroup from "../classes/groups/ObstaclesGroup";
-import UfoSprite from "../classes/sprites/UfoSprite";
+import PlayerSprite from "../classes/sprites/PlayerSprite.js";
+import EnemiesGroup from "../classes/groups/EnemiesGroup.js";
+import ObstaclesGroup from "../classes/groups/ObstaclesGroup.js";
+import UfoSprite from "../classes/sprites/UfoSprite.js";
 
 import playerImageUrl from "../assets/game/player.png";
 import bullet0ImageUrl from "../assets/game/bullet_0.png";
@@ -18,11 +16,11 @@ import enemy6ImageUrl from "../assets/game/enemy_6.png";
 import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
 import ufoImageUrl from "../assets/game/ufo.png";
 
-import StarfiledBg from "../classes/other/StarfieldBg";
-import LevelController from "../classes/controllers/LevelController";
-import EscapeMenuComponent from "../classes/components/EscapeMenuComponent";
+import StarfiledBg from "../classes/other/StarfieldBg.js";
+import LevelController from "../classes/controllers/LevelController.js";
+import EscapeMenuComponent from "../classes/components/EscapeMenuComponent.js";
 
-export default class GameScene extends Scene {
+export default class GameScene extends Phaser.Scene {
   constructor() {
     super({key: "scene-game"});
 

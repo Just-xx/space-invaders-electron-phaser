@@ -1,47 +1,56 @@
-import * as Phaser from "phaser";
-import GameScene from "./scenes/GameScene";
-import UIScene from "./scenes/UIScene";
-import MainMenuController from "./classes/controllers/MainMenuController";
+import {app, BrowserWindow} from "electron";
+import path from "node:path";
+import started from "electron-squirrel-startup";
 
-const gameCanvas = document.querySelector("#game-canvas");
-
-
-const config = {
-  type: Phaser.WEBGL,
-  width: 1920,
-  height: 1080,
-  canvas: gameCanvas,
-  transparent: true,
-  physics: {
-    default: "arcade",
-    arcade: {
-      gravity: {y: 200},
-      debug: false,
-    },
-  },
-  scene: [UIScene, GameScene],
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    autoRound: true,
-  },
-  fps: {
-    target: 60,
-    forceSetTimeOut: false,
-    limit: 0,
-  }
-};
-
-const game = new Phaser.Game(config);
-const mainMenuController = new MainMenuController(game);
-
-game.showGameCanvas = () => {
-  const gameCanvas = document.querySelector("#game-canvas");
-  gameCanvas.style.opacity = 1;
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+if (started) {
+  app.quit();
 }
 
-mainMenuController.onStart(() => {
-  game.showGameCanvas();
-  game.scene.start('scene-game');
-  game.scene.start('scene-ui', mainMenuController);
+const createWindow = () => {
+  // Create the browser window.
+  const mainWindow = new BrowserWindow({
+    width: 1920,
+    height: 1080,
+    autoHideMenuBar: false,
+    resizable: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  // and load the index.html of the app.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  } else {
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+  }
+
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools();
+};
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(() => {
+  createWindow();
+
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
 });
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
