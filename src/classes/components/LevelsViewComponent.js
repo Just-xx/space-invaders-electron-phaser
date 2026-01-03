@@ -59,9 +59,11 @@ class LevelsViewComponent {
     passedLevels = passedLevels.map(item => parseInt(item));
 
     for (let i = 0; i < 15; i++) {
+
       const lvlButton = document.createElement("button");
       lvlButton.dataset.level = i + 1;
       lvlButton.classList.add("btn");
+
       if (passedLevels.indexOf(i + 1) > -1)
         lvlButton.innerHTML = `<span class="lvl-done">${i + 1}<span>ukończony<span><span>`;
       else lvlButton.innerHTML = `<span>${i + 1}<span>`;
@@ -74,12 +76,17 @@ class LevelsViewComponent {
 
       this.levelsWrapper.appendChild(lvlButton);
 
+      setTimeout(() => {
+        lvlButton.style.opacity = '1';
+        lvlButton.style.transform = 'translateY(0px)';
+      }, 30 * i)
+      
       lvlButton.addEventListener("click", e => this.handleLevelBtnClick(e));
     }
   }
 
   handleLevelBtnClick(e) {
-    const level = e.target.dataset.level;
+    const level = parseInt(e.target.dataset.level);
 
     this.game.scene.start("scene-game", {level: level});
     this.game.scene.start("scene-ui", this.mainMenuController);
@@ -90,8 +97,13 @@ class LevelsViewComponent {
   }
 
   hide() {
-    this.wrapper.style.display = "none";
     window.removeEventListener("keydown", this.boundHandleEscapeKey);
+
+    this.wrapper.style.opacity = "0";
+
+    setTimeout(() => {
+      this.wrapper.style.display = "none";
+    }, 200);
   }
 
   handleEscapeKey(e) {
@@ -103,10 +115,16 @@ class LevelsViewComponent {
 
   show() {
     this.wrapper.style.display = "block";
+    this.wrapper.style.opacity = "0";
     window.addEventListener("keydown", this.boundHandleEscapeKey);
 
     this.levelsWrapper.replaceChildren();
-    this.generateLevelBtns();
+    
+
+    setTimeout(() => {
+      this.wrapper.style.opacity = "1";
+      this.generateLevelBtns();
+    }, 200);
   }
 
   mount() {

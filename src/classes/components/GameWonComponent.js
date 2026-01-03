@@ -5,12 +5,18 @@ class GameWonComponent {
     // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
+    this.wrapper.classList.add("game-won-node-wrapper");
 
     // title nodes
     this.titleText = document.createElement("div");
-    this.titleText.textContent = "Gratulacje! Ostatni poziom został ukończony";
+    this.titleText.textContent = "Gratulacje!";
     this.titleText.classList.add("node-title");
     this.wrapper.appendChild(this.titleText);
+
+    this.subtitleText = document.createElement("div");
+    this.subtitleText.textContent = "Ostatni poziom został ukończony";
+    this.subtitleText.classList.add("node-subtitle");
+    this.wrapper.appendChild(this.subtitleText);
 
     // btns nodes
     this.btnsWrapper = document.createElement("div");
@@ -25,6 +31,7 @@ class GameWonComponent {
     this.wrapper.style.display = "none";
 
     this.mount();
+    this.hide();
   }
 
   mount() {
@@ -35,10 +42,14 @@ class GameWonComponent {
 
   show() {
     this.wrapper.style.display = "flex";
+    this.wrapper.style.opacity = "1";
   }
 
   hide() {
-    this.wrapper.style.display = "none";
+    this.wrapper.style.opacity = "0";
+    setTimeout(() => {
+      this.wrapper.style.display = "none";
+    }, 200);
   }
 
   onReturn(cb) {

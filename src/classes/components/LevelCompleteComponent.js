@@ -47,6 +47,7 @@ class LevelCompleteComponent {
     this.wrapper.style.display = "none";
 
     this.mount();
+    this.hide();
   }
 
   mount() {
@@ -55,12 +56,16 @@ class LevelCompleteComponent {
     document.querySelector("#game").appendChild(this.wrapper);
   }
 
-  show() {
+ show() {
     this.wrapper.style.display = "flex";
+    this.wrapper.style.opacity = "1";
   }
 
   hide() {
-    this.wrapper.style.display = "none";
+    this.wrapper.style.opacity = "0";
+    setTimeout(() => {
+      this.wrapper.style.display = "none";
+    }, 200);
   }
 
   setScore(score) {

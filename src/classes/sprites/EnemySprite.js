@@ -8,7 +8,7 @@ const ENEMY_TYPES = [
   "enemy-type6",
 ];
 
-const ENEMIES_SCALES = [0.1, 0.09, 0.14, 0.1, 0.19, 0.23, 0.19];
+const ENEMIES_SCALES = [0.11, 0.1, 0.15, 0.11, 0.2, 0.24, 0.2];
 
 class EnemySprite extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, enemyType, health = 100) {

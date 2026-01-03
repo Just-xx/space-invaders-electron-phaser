@@ -18,7 +18,7 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.levelScheme = level.scheme;
     this.depthLevel = 0;
     this.lastVelocity = this.startVelocity;
-    this.canShoot = true;
+    this.canShoot = false;
 
     this.bullets = new BulletsGroup(this.scene, "down", true, "bullet-type1");
 
@@ -154,9 +154,16 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.depthLevel++;
 
     this.getChildren().forEach(child => {
-      child.y += this.lastEnemyDisplayHeight + this.spacingY;
+      const newY = child.y + this.lastEnemyDisplayHeight + this.spacingY;
+      this.scene.tweens.add({
+        targets: child,
+        y: newY,
+        x: child.x,
+        duration: 80,
+        ease: "Power2"
+      })
     });
-    this.velocity += 30;
+    this.velocity += 20;
   }
 
   autoShooting() {
@@ -174,7 +181,7 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   speedup() {
     if (this.getChildren().length <= 0) return;
     const enemyVelocity = this.getChildren()[0].body.velocity.x;
-    this.velocity += 5;
+    this.velocity += 2;
 
     if (enemyVelocity < 0) this.setVelocityX(-this.velocity);
     else this.setVelocityX(this.velocity);

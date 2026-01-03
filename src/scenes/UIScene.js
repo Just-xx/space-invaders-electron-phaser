@@ -14,20 +14,21 @@ class UIScene extends Scene {
     this.level = 1;
 
     this.mainMenu = null;
+    this.gameScene = null;
 
     this.elementsSpacing = 256;
   }
 
   init(mainMenu) {
     this.mainMenu = mainMenu;
+    this.events.once("shutdown", () => this.shutdown());
   }
 
-  preload() {
-    this.load.image("restart-btn", btnUrl);
-  }
+  preload() {}
 
   create() {
     const gameScene = this.scene.get("scene-game");
+    this.gameScene = gameScene;
 
     const centerX = this.scale.width / 2;
     const centerTopBarY = gameScene.boundsY.top / 2;
@@ -57,25 +58,15 @@ class UIScene extends Scene {
 
     // game over screen handling
     this.gameOverNode = new GameOverComponent();
-
-    this.gameOverNode.onRestart(() => {
-      this.gameOverNode.hide();
-      this.events.emit("restart");
-    });
-
+    this.gameOverNode.onRestart(() => this.restartLevel());
     this.gameOverNode.onReturn(() => this.onReturn());
 
-    // level complete screen
+    // level complete screen handling
     this.levelCompleteComponent = new LevelCompleteComponent();
-
-    this.levelCompleteComponent.onNextLevelClick(() => {
-      this.levelCompleteComponent.hide();
-      this.events.emit("nextLevelStart");
-    });
-
+    this.levelCompleteComponent.onNextLevelClick(() => this.nextLevelStart());
     this.levelCompleteComponent.onReturn(() => this.onReturn());
 
-    // game won screen
+    // game won screen handling
     this.gameWonComponent = new GameWonComponent();
     this.gameWonComponent.onReturn(() => this.onReturn());
   }
@@ -92,9 +83,10 @@ class UIScene extends Scene {
     this.levelText.setText(`Poziom: ${this.level}`);
 
     if (this.lives <= 0) this.showGameOverComponent();
+
     if (data.levelComplete) {
       this.showLevelComponent();
-      this.level--;
+      this.level = this.level - 1;
       this.levelText.setText(`Poziom: ${this.level}`);
     }
 
@@ -109,8 +101,6 @@ class UIScene extends Scene {
       ease: "EaseIn",
     });
   }
-
-  updateListener() {}
 
   showGameOverComponent() {
     this.gameOverNode.setLevel(this.level);
@@ -128,6 +118,18 @@ class UIScene extends Scene {
     this.gameWonComponent.show();
   }
 
+  nextLevelStart() {
+    this.levelCompleteComponent.hide();
+    this.gameScene.scene.restart({});
+    this.scene.restart(this.mainMenu);
+  }
+
+  restartLevel() {
+    this.gameOverNode.hide();
+    this.gameScene.scene.restart({});
+    this.scene.restart(this.mainMenu);
+  }
+
   onReturn() {
     // hide all possible components
     this.mainMenu.show();
@@ -143,6 +145,12 @@ class UIScene extends Scene {
     this.scene.stop("scene-game");
     this.scene.setVisible(false, "scene-game");
     this.scene.setVisible(false, "scene-ui");
+  }
+
+  shutdown() {
+    this.levelText.destroy();
+    this.scoreText.destroy();
+    this.livesText.destroy();
   }
 }
 

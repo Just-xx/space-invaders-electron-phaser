@@ -18,10 +18,12 @@ class LevelController {
       this.currentLevel++;
       window.localStorage.setItem("current-level", this.currentLevel);
     }
+
     return this.getCurrentLevel();
   }
 
   setCurrentAsPassed() {
+    if (this.passedLevels.indexOf(this.currentLevel) >= 0) return;
     this.passedLevels.push(this.currentLevel);
     window.localStorage.setItem("passed-levels", this.passedLevels);
   }

@@ -14,7 +14,8 @@
     "dev": "concurrently 'npm run dev:vite' 'npm run dev:electron'",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make --platform darwin",
+    "make:windows": "electron-forge make --platform win32 --arch x64"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.10.2",

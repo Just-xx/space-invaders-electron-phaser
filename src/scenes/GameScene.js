@@ -15,6 +15,7 @@ import enemy5ImageUrl from "../assets/game/enemy_5.png";
 import enemy6ImageUrl from "../assets/game/enemy_6.png";
 import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
 import ufoImageUrl from "../assets/game/ufo.png";
+import blobImageUrl from "../assets/game/blob.png";
 
 import StarfiledBg from "../classes/other/StarfieldBg.js";
 import LevelController from "../classes/controllers/LevelController.js";
@@ -43,9 +44,14 @@ export default class GameScene extends Phaser.Scene {
   init(data) {
     this.disableProgress = false;
 
-    if (data.level) {
+
+    if (data.level && data.level !== this.levelController.currentLevel) {
       this.levelController.setCurrentLevel(data.level);
     }
+
+    
+
+    this.events.once("shutdown", () => this.shutdown());
   }
 
   preload() {
@@ -67,6 +73,8 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("obstacle-part", obstaclePartImageUrl);
 
     this.load.image("ufo", ufoImageUrl);
+
+    this.load.image("blob", blobImageUrl);
 
     // generate starfield texture
     StarfiledBg.createStarfieldTexture(this);
@@ -98,15 +106,11 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.obstaclesGroup, this.enemies, o => o.onHit(), null, this);
     this.physics.add.overlap(this.obstaclesGroup, this.ufo.bullets, this.obstacleBulletHit, null, this);
 
+    // UIScene obj
+    this.UIScene = this.scene.get("scene-ui");
+
     // update HUD (UI)
     this.updateUI();
-
-    // on restart event
-    this.UIScene = this.scene.get("scene-ui");
-    this.UIScene.events.once("restart", () => this.restartLevel());
-
-    // on next level start event
-    this.UIScene.events.once("nextLevelStart", () => this.nextLevelStart());
 
     // visuals
     this.fadeIn();
@@ -137,6 +141,17 @@ export default class GameScene extends Phaser.Scene {
     });
   }
 
+  shutdown() {
+    this.escapeKey.destroy();
+
+    this.ufo.destroy();
+    this.player.destroy();
+    this.enemies.destroy();
+    this.obstaclesGroup.destroy();
+
+    this.time.removeAllEvents();
+  }
+
   updateUI(additionalData) {
     if (this.UIScene && this.UIScene.scene.isActive()) {
       this.UIScene.updateUI({
@@ -149,12 +164,6 @@ export default class GameScene extends Phaser.Scene {
     else this.time.delayedCall(50, () => this.updateUI());
   }
 
-  // game states actions
-  restartLevel() {
-    this.UIScene.scene.restart();
-    this.scene.restart();
-  }
-
   levelComplete() {
     this.levelController.nextLevel();
     this.disableProgress = true;
@@ -165,11 +174,6 @@ export default class GameScene extends Phaser.Scene {
     this.disableProgress = true;
     this.levelController.setCurrentAsPassed();
     this.updateUI({gameWon: true});
-  }
-
-  nextLevelStart() {
-    this.UIScene.scene.restart();
-    this.scene.restart();
   }
 
   gameOver() {
@@ -194,7 +198,7 @@ export default class GameScene extends Phaser.Scene {
 
     // all enemies eliminated
     if (this.enemies.getLength() <= 0 && this.levelController.currentLevel < 15) this.levelComplete();
-    if (this.enemies.getLength() <= 0 && this.levelController.currentLevel >= 15) this.gameWon();
+    else if (this.enemies.getLength() <= 0 && this.levelController.currentLevel >= 15) this.gameWon();
   }
 
   ufoHit(bullet, ufo) {

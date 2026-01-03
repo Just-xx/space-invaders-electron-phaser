@@ -1,4 +1,4 @@
-import * as Phaser from "phaser";
+import Phaser from "phaser";
 import BulletsGroup from "../groups/BulletsGroup";
 
 class UfoSprite extends Phaser.Physics.Arcade.Sprite {
@@ -22,7 +22,7 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
 
     this.bullets = new BulletsGroup(this.scene);
 
-    this.particles = this.scene.add.particles(0, 0, "bullet-type1", {
+    this.destroyParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       speed: {min: 100, max: 300},
       angle: {min: 0, max: 360},
       scale: {start: 0.1, end: 0},
@@ -33,10 +33,20 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
+    this.trailEmitter = this.scene.add.particles(0, 0, "blob", {
+      speed: 0,
+      scale: { start: 0.9, end: 0 },
+      alpha: { start: 0.2, end: 0 },
+      lifespan: 250,
+      blendMode: "ADD",
+      emitting: false
+    });
+
     this.deployCount = 0;
   }
 
   start(direction) {
+    if (this.scene.enemies.getLength() <= 0) return;
     this.deployCount++;
     this.inProgress = true;
     this.setVisible(true);
@@ -50,6 +60,9 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       this.scene.scale.width / 2,
       2 * firstEnemie.y - startY - this.displayHeight * 2
     );
+
+    this.trailEmitter.start();
+    this.trailEmitter.startFollow(this);
 
     // direction = 1 / left
     if (!direction) {
@@ -74,6 +87,7 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
         this.inProgress = false;
         this.setVisible(false);
         this.setPosition(-100, -100);
+        this.trailEmitter.stop();
       },
     });
   }
@@ -95,12 +109,13 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (this.inProgress && this.visible && this.x > this.scene.boundsX.left + 128 && this.x < this.scene.boundsX.right - 128) {
-      this.bullets.handleEnemyFire(this, (3 / this.scene.levelController.currentLevel) * 15);
+      this.bullets.handleEnemyFire(this, (3 / this.scene.levelController.currentLevel) * 100);
     }
   }
 
   checkStartCondition() {
     if (this.inProgress) return false;
+    
 
     const depth = this.scene.enemies.depthLevel;
     const level = this.scene.levelController.currentLevel;
@@ -108,8 +123,10 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     if (depth === this.lastDepth || depth === 0) return false;
     this.lastDepth = depth;
 
-    const minChance = 0.15;
-    const maxChance = 0.5;
+    if (depth === 5 && this.deployCount === 0) return true;
+
+    const minChance = 0.1;
+    const maxChance = 0.3;
     const maxLevel = 15;
 
     const safeLevel = Phaser.Math.Clamp(level, 1, maxLevel);
@@ -124,7 +141,7 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
 
   onHit() {
     this.animation.stop();
-    this.particles.explode(20, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
+    this.destroyParticles.explode(20, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
     this.scene.time.delayedCall(100, () => {
       this.setVisible(false);
       this.setPosition(-100, -100);
