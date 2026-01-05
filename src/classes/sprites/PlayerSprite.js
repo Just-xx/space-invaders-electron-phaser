@@ -11,11 +11,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.boundsX = this.scene.boundsX;
 
-    this.playerSpeed = 1000;
+    this.playerSpeed = 800;
     this.PLAYER_SCALE = 0.14;
     this.PLAYER_MOVMENT_ANGLE = 5;
 
-    this.lives = 1;
+    this.lives = 3;
     this.score = 0;
     this.inputsActive = true;
 
@@ -26,6 +26,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.bullets = new BulletsGroup(this.scene);
     this.createParticles();
+
+    this.explosionSound = this.scene.sound.add('explosion').setDetune(-500);
+    this.hitSound = this.scene.sound.add('inv-killed').setDetune(1000);
   }
 
   createParticles() {
@@ -132,11 +135,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.lives = 0;
     this.inputsActive = false;
     this.setImmovable(true);
-    this.#destroyEffect();
+    this.destroyEffect();
     this.thrustParticles.stop();
   }
 
-  #respawnEffect(bullet) {
+  respawnEffect(bullet) {
     this.inputsActive = false;
 
     this.hitParticles.explode(5, bullet.x + bullet.displayWidth / 2, bullet.y + bullet.displayHeight / 2);
@@ -153,9 +156,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.inputsActive = true;
       },
     });
+
+    this.hitSound.play({ volume: this.scene.volume.effects })
   }
 
-  #destroyEffect() {
+  destroyEffect() {
+
     this.inputsActive = false;
     this.destroyParticles.explode(60, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
     this.scene.tweens.add({
@@ -164,6 +170,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       duration: 150,
       ease: "EaseIn",
     });
+
+    this.explosionSound.play({ volume: this.scene.volume.effects })
+
   }
 
   onHit(bullet) {
@@ -171,7 +180,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.lives--;
 
     if (this.lives <= 0) this.gameOver();
-    else this.#respawnEffect(bullet);
+    else this.respawnEffect(bullet);
   }
 }
 

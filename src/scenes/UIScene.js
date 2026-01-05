@@ -21,6 +21,7 @@ class UIScene extends Scene {
 
   init(mainMenu) {
     this.mainMenu = mainMenu;
+    if (mainMenu.music) mainMenu.music.pause();
     this.events.once("shutdown", () => this.shutdown());
   }
 

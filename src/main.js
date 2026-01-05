@@ -1,17 +1,21 @@
-import {app, BrowserWindow} from "electron";
+import { app, BrowserWindow, nativeImage } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
+import iconUrl from './assets/icons/icon.png';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
 
+console.log(iconUrl);
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
+    icon: nativeImage.createFromDataURL(iconUrl),
     resizable: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -51,3 +55,5 @@ app.on("window-all-closed", () => {
   }
 });
 
+
+app.setAppUserModelId("com.squirrel.SpaceInvaders.SpaceInvaders");

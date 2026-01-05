@@ -17,6 +17,16 @@ import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
 import ufoImageUrl from "../assets/game/ufo.png";
 import blobImageUrl from "../assets/game/blob.png";
 
+import explosionSoundUrl from "../assets/game/explosion.wav";
+import fastInv1SoundUrl from "../assets/game/fastinvader1.wav";
+import fastInv2SoundUrl from "../assets/game/fastinvader2.wav";
+import fastInv3SoundUrl from "../assets/game/fastinvader3.wav";
+import fastInv4SoundUrl from "../assets/game/fastinvader4.wav";
+import invKilledSoundUrl from "../assets/game/invaderkilled.wav";
+import ufoLowpitchSoundUrl from "../assets/game/ufo_lowpitch.wav";
+import ufoHighpitchSoundUrl from "../assets/game/ufo_highpitch.wav";
+import shootSoundUrl from "../assets/game/shoot.wav";
+
 import StarfiledBg from "../classes/other/StarfieldBg.js";
 import LevelController from "../classes/controllers/LevelController.js";
 import EscapeMenuComponent from "../classes/components/EscapeMenuComponent.js";
@@ -39,29 +49,28 @@ export default class GameScene extends Phaser.Scene {
     this.disableProgress = false;
 
     this.levelController = new LevelController();
+
+    this.volume = {
+      effects: 0.5,
+      music: 6,
+    };
   }
 
   init(data) {
     this.disableProgress = false;
 
-
     if (data.level && data.level !== this.levelController.currentLevel) {
       this.levelController.setCurrentLevel(data.level);
     }
-
-    
 
     this.events.once("shutdown", () => this.shutdown());
   }
 
   preload() {
+    // Textures
     this.load.image("player", playerImageUrl);
-
-    // bullets
     this.load.image("bullet-type1", bullet1ImageUrl);
     this.load.image("bullet", bullet0ImageUrl);
-
-    // enemies types
     this.load.image("enemy-type0", enemy0ImageUrl);
     this.load.image("enemy-type1", enemy1ImageUrl);
     this.load.image("enemy-type2", enemy2ImageUrl);
@@ -69,15 +78,21 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("enemy-type4", enemy4ImageUrl);
     this.load.image("enemy-type5", enemy5ImageUrl);
     this.load.image("enemy-type6", enemy6ImageUrl);
-
     this.load.image("obstacle-part", obstaclePartImageUrl);
-
     this.load.image("ufo", ufoImageUrl);
-
-    this.load.image("blob", blobImageUrl);
-
-    // generate starfield texture
+    this.load.image("blob", blobImageUrl); // ufo trail ("blob")
     StarfiledBg.createStarfieldTexture(this);
+
+    // Sounds
+    this.load.audio("explosion", explosionSoundUrl);
+    this.load.audio("shoot", shootSoundUrl);
+    this.load.audio("fast-inv1", fastInv1SoundUrl);
+    this.load.audio("fast-inv2", fastInv2SoundUrl);
+    this.load.audio("fast-inv3", fastInv3SoundUrl);
+    this.load.audio("fast-inv4", fastInv4SoundUrl);
+    this.load.audio("inv-killed", invKilledSoundUrl);
+    this.load.audio("ufo-highpitch", ufoHighpitchSoundUrl);
+    this.load.audio("ufo-lowpitch", ufoLowpitchSoundUrl);
   }
 
   create() {
@@ -234,7 +249,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    this.enemies.update();
+    this.enemies.update(time, delta);
     this.checkEnemyInvasion();
     this.starfiled.update(time, delta);
   }

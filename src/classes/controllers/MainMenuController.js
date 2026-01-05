@@ -1,8 +1,11 @@
 import LevelsViewComponent from "../components/LevelsViewComponent";
+import songUrl from '../../assets/menu/spaceinvaders_song.wav';
+import SettingsViewComponent from "../components/SettingsViewComponent";
 
 class MainMenuController {
   constructor(game) {
     this.levelsViewComponent = new LevelsViewComponent(this, game);
+    this.settingsViewComponent = new SettingsViewComponent(this, game);
 
     this.menuBtns = document.querySelectorAll(".menu-btn");
 
@@ -16,9 +19,17 @@ class MainMenuController {
 
     
     this.levelsBtn = document.querySelector('#menu-levels-btn');
+    this.settingsBtn = document.querySelector('#menu-settings-btn');
 
     this.startBtn.addEventListener("click", () => this.hide());
     this.levelsBtn.addEventListener('click', () => this.handleLevelsClick());
+    this.settingsBtn.addEventListener('click', () => this.handleSettingsClick());
+
+    this.music = new Audio(songUrl);
+
+    this.music.loop = true;
+    this.music.volume = 1;
+    this.music.play();
   }
 
   updateLevel() {
@@ -66,6 +77,13 @@ class MainMenuController {
     setTimeout(() => {
       this.game.style.backgroundColor = "rgba(0, 0, 0, 0.25)";
     }, 450);
+
+    
+
+    if (this.music.paused) {
+      this.music.play();
+      this.music.currentTime = 0;
+    }
   }
 
   onStart(fn) {
@@ -75,6 +93,11 @@ class MainMenuController {
   handleLevelsClick() {
     this.hide(0.6);
     this.levelsViewComponent.show();
+  }
+
+  handleSettingsClick() {
+    this.hide(0.6);
+    this.settingsViewComponent.show();
   }
 
   options() {}

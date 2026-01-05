@@ -1,6 +1,7 @@
 {
   "name": "space-invaders",
-  "version": "1.0.0",
+  "productName": "Space Invaders - Inwazja 2.0",
+  "version": "1.5.0",
   "description": "Clasic desktop game space invaders. Made with use of electron.js and phaser.js",
   "license": "ISC",
   "author": {

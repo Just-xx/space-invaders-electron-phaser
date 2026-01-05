@@ -9,11 +9,13 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.velocity = 600;
     this.spread = 400;
 
+    this.shootSound = this.scene.sound.add("shoot");
+
     // Create a trail emitter for each bullet instance
     this.trailEmitter = this.scene.add.particles(0, 0, "bullet", {
       speed: 10,
-      scale: { start: 0.05, end: 0 },
-      alpha: { start: 0.7, end: 0 },
+      scale: {start: 0.05, end: 0},
+      alpha: {start: 0.7, end: 0},
       lifespan: 250,
       blendMode: "ADD",
       tint: 0xffffff,
@@ -22,8 +24,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
     this.enemyTrailEmitter = this.scene.add.particles(0, 0, "bullet", {
       speed: 10,
-      scale: { start: 0.05, end: 0 },
-      alpha: { start: 0.7, end: 0 },
+      scale: {start: 0.05, end: 0},
+      alpha: {start: 0.7, end: 0},
       lifespan: 250,
       blendMode: "ADD",
       tint: [0xff0000, 0xffa500, 0xffff00],
@@ -45,6 +47,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
     this.trailEmitter.start();
     this.trailEmitter.startFollow(this);
+
+    this.shootSound.play({volume: this.scene.volume.effects});
   }
 
   enemyFire(x, y) {
@@ -57,6 +61,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
     this.enemyTrailEmitter.start();
     this.enemyTrailEmitter.startFollow(this);
+
+    this.shootSound.play({volume: this.scene.volume.effects / 2, detune: 500});
   }
 
   onHit() {
@@ -67,7 +73,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-
     if (this.y <= 0 || this.y > this.scene.sys.game.config.height) this.onHit();
   }
 }

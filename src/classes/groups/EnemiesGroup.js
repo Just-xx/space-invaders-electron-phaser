@@ -23,9 +23,45 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     this.bullets = new BulletsGroup(this.scene, "down", true, "bullet-type1");
 
     this.createEnemies();
+
+    this.timeToStop = 500;
+    this.timeToAnimate = 500;
+    this.stareTime = 500;
+
+    this.fastInv1Sound = this.scene.sound.add('fast-inv1');
+    this.fastInv2Sound = this.scene.sound.add('fast-inv2');
+    this.fastInv3Sound = this.scene.sound.add('fast-inv3');
+    this.fastInv4Sound = this.scene.sound.add('fast-inv4');
+
+    this.musicState = 1;
+    this.musicSpeed = this.startVelocity;
+    this.timeToPlayNote = 0;
   }
 
-  update() {
+  playSong(time, delta) {
+    if (this.scene.disableProgress) return;
+
+    this.musicSpeed = this.velocity;
+
+    this.timeToPlayNote -= delta;
+    if (this.timeToPlayNote > 0 ) return;
+
+    switch(this.musicState) {
+      case 1: this.fastInv1Sound.play({ volume: this.scene.volume.music }); break;
+      case 2: this.fastInv2Sound.play({ volume: this.scene.volume.music }); break;
+      case 3: this.fastInv3Sound.play({ volume: this.scene.volume.music }); break;
+      case 4: this.fastInv4Sound.play({ volume: this.scene.volume.music }); break;
+    }
+
+    this.getChildren().forEach(e => e.flip())
+
+    this.timeToPlayNote = 90000 / this.velocity;
+    this.musicState++;
+    if (this.musicState > 4) this.musicState = 1;
+  }
+
+  update(time, delta) {
+    this.playSong(time, delta);
     this.handleBoundsCollsion();
     if (this.canShoot && this.getChildren().length) this.autoShooting();
 
@@ -44,6 +80,56 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
       this.getChildren().forEach(e => e.setVelocityX(this.lastVelocity));
       this.canShoot = true;
     }
+  }
+
+  handleBoundsCollsion() {
+    this.getChildren().forEach(child => {
+      if (child.x + child.displayWidth >= this.scene.boundsX.right && child.body.velocity.x > 0) {
+        this.setVelocityX(-this.velocity);
+        this.moveDown();
+      } else if (child.x <= this.scene.boundsX.left && child.body.velocity.x < 0) {
+        this.setVelocityX(this.velocity);
+        this.moveDown();
+      }
+    });
+  }
+
+  moveDown() {
+    if (this.scene.disableProgress) return;
+    this.depthLevel++;
+
+    this.getChildren().forEach(child => {
+      const newY = child.y + this.lastEnemyDisplayHeight + this.spacingY;
+      this.scene.tweens.add({
+        targets: child,
+        y: newY,
+        x: child.x,
+        duration: 80,
+        ease: "Power2",
+      });
+    });
+    this.velocity += 15;
+  }
+
+  autoShooting() {
+    const childs = this.getChildren();
+    const randomEnemyIndex = Phaser.Math.Between(0, childs.length - 1);
+    const chance = this.shootChance;
+    this.bullets.handleEnemyFire(childs[randomEnemyIndex], chance);
+  }
+
+  gameOver() {
+    this.canShoot = false;
+    this.scene.disableProgress = true;
+  }
+
+  speedup() {
+    if (this.getChildren().length <= 0) return;
+    const enemyVelocity = this.getChildren()[0].body.velocity.x;
+    this.velocity += 4;
+
+    if (enemyVelocity < 0) this.setVelocityX(-this.velocity);
+    else this.setVelocityX(this.velocity);
   }
 
   createEnemies() {
@@ -99,9 +185,8 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
   }
 
   centerEnemies() {
-    // spaghetti code
+    
     let xBound = 0;
-
     const enemies = this.getChildren();
 
     enemies.forEach(e => {
@@ -135,56 +220,6 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
         eRow.forEach(e => (e.x = e.x + diff));
       }
     });
-  }
-
-  handleBoundsCollsion() {
-    this.getChildren().forEach(child => {
-      if (child.x + child.displayWidth >= this.scene.boundsX.right && child.body.velocity.x > 0) {
-        this.setVelocityX(-this.velocity);
-        this.moveDown();
-      } else if (child.x <= this.scene.boundsX.left && child.body.velocity.x < 0) {
-        this.setVelocityX(this.velocity);
-        this.moveDown();
-      }
-    });
-  }
-
-  moveDown() {
-    if (this.scene.disableProgress) return;
-    this.depthLevel++;
-
-    this.getChildren().forEach(child => {
-      const newY = child.y + this.lastEnemyDisplayHeight + this.spacingY;
-      this.scene.tweens.add({
-        targets: child,
-        y: newY,
-        x: child.x,
-        duration: 80,
-        ease: "Power2"
-      })
-    });
-    this.velocity += 20;
-  }
-
-  autoShooting() {
-    const childs = this.getChildren();
-    const randomEnemyIndex = Phaser.Math.Between(0, childs.length - 1);
-    const chance = this.shootChance;
-    this.bullets.handleEnemyFire(childs[randomEnemyIndex], chance);
-  }
-
-  gameOver() {
-    this.canShoot = false;
-    this.scene.disableProgress = true;
-  }
-
-  speedup() {
-    if (this.getChildren().length <= 0) return;
-    const enemyVelocity = this.getChildren()[0].body.velocity.x;
-    this.velocity += 2;
-
-    if (enemyVelocity < 0) this.setVelocityX(-this.velocity);
-    else this.setVelocityX(this.velocity);
   }
 }
 

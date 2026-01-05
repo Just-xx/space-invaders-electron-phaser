@@ -1,27 +1,27 @@
+const { default: MakerSquirrel } = require("@electron-forge/maker-squirrel");
 const {FusesPlugin} = require("@electron-forge/plugin-fuses");
 const {FuseV1Options, FuseVersion} = require("@electron/fuses");
 
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: 'src/assets/icons/icon' 
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: "@electron-forge/maker-squirrel",
-      config: { name: "space_invaders" },
-    },
+    new MakerSquirrel({
+      name: "SpaceInvaders",
+      setupIcon: "src/assets/icons/icon_ins.ico"
+    }),
     {
       name: "@electron-forge/maker-zip",
       platforms: ["darwin", "win32"],
     },
     {
-      name: "@electron-forge/maker-deb",
-      config: {},
-    },
-    {
-      name: "@electron-forge/maker-rpm",
-      config: {},
+      name: '@electron-forge/maker-dmg',
+      config: {
+        icon: 'src/assets/icons/icon_ins.icns'
+      }
     },
   ],
   plugins: [

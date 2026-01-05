@@ -27,12 +27,17 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     this.flipTime = 1000;
     this.timeToFlip = this.flipTime;
 
+    this.direction = "RIGHT";
+
     this.body.allowGravity = false;
     this.setOrigin(0, 0);
     this.setScale(ENEMIES_SCALES[this.enemyType]);
 
     this.healthBar = this.scene.add.graphics();
     this.healthBar.setVisible(false);
+
+    this.hitSound = this.scene.sound.add("inv-killed");
+    this.explosionSound = this.scene.sound.add("explosion");
 
     this.particles = this.scene.add.particles(0, 0, "bullet-type1", {
       speed: {min: 100, max: 300},
@@ -74,8 +79,11 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     if (this.health <= 0) return;
 
     this.health -= damage;
-    if (this.health < 0) {
+    if (this.health <= 0) {
       this.health = 0;
+      this.explosionSound.play({volume: this.scene.volume.effects});
+    } else {
+      this.hitSound.play({volume: this.scene.volume.effects});
     }
 
     this.#updateHealthBar();
@@ -95,13 +103,10 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     if (this.healthBarActive) {
       this.healthBar.setPosition(this.x, this.y);
     }
+  }
 
-    if (this.timeToFlip <= 0) {
-      this.flipX = !this.flipX;
-      this.timeToFlip = this.flipTime;
-    }
-
-    this.timeToFlip -= delta;
+  flip(time, delta) {
+    this.flipX = !this.flipX;
   }
 
   destroy(fromScene) {

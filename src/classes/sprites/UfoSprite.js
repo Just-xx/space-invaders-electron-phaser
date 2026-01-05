@@ -13,8 +13,8 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     this.setScale(0.13);
     this.body.allowGravity = false;
 
-    this.x = -100;
-    this.y = -100;
+    this.x = -300;
+    this.y = -300;
 
     this.inProgress = false;
     this.setVisible(false);
@@ -33,16 +33,25 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
-    this.trailEmitter = this.scene.add.particles(0, 0, "blob", {
+    this.trailParticles = this.scene.add.particles(0, 0, "blob", {
       speed: 0,
-      scale: { start: 0.9, end: 0 },
-      alpha: { start: 0.2, end: 0 },
-      lifespan: 250,
-      blendMode: "ADD",
-      emitting: false
+      scale: {start: 0.9, end: 0.9},
+      alpha: {start: 0.05, end: 0},
+      lifespan: 1000,
+      blendMode: "NORMAL",
+      emitting: false,
+      frequency: 20,
     });
 
+    this.trailParticles.setDepth(2);
+    this.destroyParticles.setDepth(3);
+    this.setDepth(5);
+
+    this.flySound = this.scene.sound.add("ufo-lowpitch");
+    this.explosionSound = this.scene.sound.add("explosion");
+
     this.deployCount = 0;
+    this.lastDeployed = -15000;
   }
 
   start(direction) {
@@ -61,8 +70,8 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       2 * firstEnemie.y - startY - this.displayHeight * 2
     );
 
-    this.trailEmitter.start();
-    this.trailEmitter.startFollow(this);
+    this.trailParticles.startFollow(this);
+    this.trailParticles.start();
 
     // direction = 1 / left
     if (!direction) {
@@ -86,9 +95,31 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       onComplete: () => {
         this.inProgress = false;
         this.setVisible(false);
-        this.setPosition(-100, -100);
-        this.trailEmitter.stop();
+        this.setPosition(-300, -300);
+        this.trailParticles.stop();
+        this.stopFlySound();
       },
+    });
+  }
+
+  playFlySound() {
+    this.flySound.play({
+      volume: 0,
+      loop: true,
+    });
+
+    this.scene.tweens.add({
+      targets: this.flySound,
+      volume: this.scene.volume.effects,
+      duration: 2000,
+    });
+  }
+
+  stopFlySound() {
+    this.scene.tweens.add({
+      targets: this.flySound,
+      volume: 0,
+      duration: 2000,
     });
   }
 
@@ -102,31 +133,49 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     super.preUpdate(time, delta);
     if (this.scene.enemies.getLength() <= 0) return;
 
-    if (this.checkStartCondition()) {
+    if (this.checkStartCondition(time)) {
       this.inProgress = true;
       const timeToStart = Math.round(Math.random() * 1500 + 1000);
+      this.playFlySound();
       this.scene.time.delayedCall(timeToStart, () => this.start(Math.round(Math.random())));
     }
 
-    if (this.inProgress && this.visible && this.x > this.scene.boundsX.left + 128 && this.x < this.scene.boundsX.right - 128) {
-      this.bullets.handleEnemyFire(this, (3 / this.scene.levelController.currentLevel) * 100);
+    if (
+      this.inProgress &&
+      this.visible &&
+      this.x > this.scene.boundsX.left + 128 &&
+      this.x < this.scene.boundsX.right - 128
+    ) {
+      this.bullets.handleEnemyFire(this, (3 / this.scene.levelController.currentLevel) * 50);
     }
+
+    if (!this.inProgress && this.flySound.isPlaying) this.stopFlySound();
   }
 
-  checkStartCondition() {
+  destroy() {
+    this.flySound.stop();
+  }
+
+  checkStartCondition(time) {
     if (this.inProgress) return false;
     
-
     const depth = this.scene.enemies.depthLevel;
     const level = this.scene.levelController.currentLevel;
-
+    
     if (depth === this.lastDepth || depth === 0) return false;
     this.lastDepth = depth;
-
-    if (depth === 5 && this.deployCount === 0) return true;
+    
+    if (depth === 5 && this.deployCount === 0) {
+      this.lastDeployed = time;
+      return true;
+    }
+    
+    if (time - this.lastDeployed < 13000) {
+      return false;
+    }
 
     const minChance = 0.1;
-    const maxChance = 0.3;
+    const maxChance = 0.6;
     const maxLevel = 15;
 
     const safeLevel = Phaser.Math.Clamp(level, 1, maxLevel);
@@ -136,17 +185,21 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     const limit = Math.round(actualChance * Phaser.Math.Clamp(level, 10, maxLevel));
     if (limit <= this.deployCount) return false;
 
-    return Math.random() <= actualChance;
+    const result = Math.random() <= actualChance;
+    if (result) this.lastDeployed = time;
+    return result;
   }
 
   onHit() {
     this.animation.stop();
     this.destroyParticles.explode(20, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
-    this.scene.time.delayedCall(100, () => {
-      this.setVisible(false);
-      this.setPosition(-100, -100);
-      this.inProgress = false;
-    });
+
+    this.stopFlySound();
+    this.explosionSound.play({volume: this.scene.volume.effects});
+
+    this.setVisible(false);
+    this.setPosition(-300, -300);
+    this.inProgress = false;
   }
 }
 

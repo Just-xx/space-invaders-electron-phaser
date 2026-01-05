@@ -17,7 +17,7 @@ html {
   font-size: 24px;
   background-color: #000;
   color: #fff;
-  background-image: url("../assets/menuImgs/menu_bg.png");
+  background-image: url("../assets/menu/menu_bg.png");
   background-size: cover;
   background-position: right bottom;
 }
@@ -103,7 +103,8 @@ html {
 }
 
 .menu-btn,
-.btn {
+.btn,
+.setting-volume {
   font-family: "Orbitron";
   font-weight: 600;
   font-size: 1.15rem;
@@ -227,7 +228,8 @@ html {
 }
 
 /* Levels View Component */
-.level-view-wrapper {
+.level-view-wrapper,
+.settings-view-wrapper {
   z-index: 100000;
   position: absolute;
   top: 50%;
@@ -242,13 +244,15 @@ html {
   transition: opacity 200ms ease-in-out;
 }
 
-.level-view-wrapper h2 {
+.level-view-wrapper h2,
+.settings-view-wrapper h2 {
   text-align: center;
   margin-bottom: 48px;
   font-size: 1.35rem;
 }
 
-.level-view-levels-wrapper {
+.level-view-levels-wrapper,
+.settings-view-settings-wrapper {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -314,7 +318,8 @@ html {
   opacity: .7;
 }
 
-.level-view-wrapper .level-view-return-btn {
+.level-view-wrapper .level-view-return-btn,
+.settings-view-wrapper .settings-view-return-btn {
   position: absolute;
   top: 0;
   left: 0;
@@ -337,3 +342,38 @@ html {
   font-weight: 500;
 }
 
+/* Settings component specifif */
+.settings-view-wrapper {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.settings-view-settings-wrapper {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  margin-top: 64px;
+}
+
+.setting-volume {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  row-gap: 32px;
+  column-gap: 24px;
+}
+
+.setting-volume * {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.setting-volume label {
+  font-size: 0.9rem;
+}
+
+.setting-volume span {
+  font-size: 0.9rem;
+}

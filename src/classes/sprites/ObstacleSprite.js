@@ -18,10 +18,13 @@ class ObstacleSprite extends Phaser.Physics.Arcade.Sprite {
       tint: [0x80ecff, 0x389deb, 0xf9180ff],
       emitting: false,
     });
+
+    this.hitSound = this.scene.sound.add('inv-killed').setDetune(2500);
   }
 
   onHit() {
     this.hitParticles.explode(5, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
+    this.hitSound.play({ volume: this.scene.volume.effects / 2 })
     this.destroy();
   }
 }
