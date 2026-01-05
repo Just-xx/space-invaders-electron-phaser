@@ -1,8 +1,10 @@
+// Sprites imports
 import PlayerSprite from "../classes/sprites/PlayerSprite.js";
 import EnemiesGroup from "../classes/groups/EnemiesGroup.js";
 import ObstaclesGroup from "../classes/groups/ObstaclesGroup.js";
 import UfoSprite from "../classes/sprites/UfoSprite.js";
 
+// Textures imports
 import playerImageUrl from "../assets/game/player.png";
 import bullet0ImageUrl from "../assets/game/bullet_0.png";
 import bullet1ImageUrl from "../assets/game/bullet_1.png";
@@ -17,6 +19,7 @@ import obstaclePartImageUrl from "../assets/game/obstacle_part.png";
 import ufoImageUrl from "../assets/game/ufo.png";
 import blobImageUrl from "../assets/game/blob.png";
 
+// Sound imports
 import explosionSoundUrl from "../assets/game/explosion.wav";
 import fastInv1SoundUrl from "../assets/game/fastinvader1.wav";
 import fastInv2SoundUrl from "../assets/game/fastinvader2.wav";
@@ -27,43 +30,81 @@ import ufoLowpitchSoundUrl from "../assets/game/ufo_lowpitch.wav";
 import ufoHighpitchSoundUrl from "../assets/game/ufo_highpitch.wav";
 import shootSoundUrl from "../assets/game/shoot.wav";
 
+// Other imports
 import StarfiledBg from "../classes/other/StarfieldBg.js";
 import LevelController from "../classes/controllers/LevelController.js";
 import EscapeMenuComponent from "../classes/components/EscapeMenuComponent.js";
 
-export default class GameScene extends Phaser.Scene {
+class GameScene extends Phaser.Scene {
   constructor() {
     super({key: "scene-game"});
 
-    // sprites and groups
+    // Sprites, Groups
     this.player;
     this.bullets;
     this.enemies;
+    this.ufo;
+    this.obstacles;
 
+    // other
     this.cursor;
+    this.UIScene;
+    this.starfiledBg;
+    this.escapeMenuNode;
 
-    // x and y limits of sprites
-    this.boundsX = {left: 128, right: 1792};
-    this.boundsY = {top: 128, bottom: 1000};
+    // X and Y limits of sprites
+    this.boundsX = {
+      left: 128,
+      right: 1792,
+    };
+
+    this.boundsY = {
+      top: 128,
+      bottom: 1000,
+    };
 
     this.disableProgress = false;
 
+    // must be in constructor, beacuse it's used before scene creaation
     this.levelController = new LevelController();
 
     this.volume = {
-      effects: 0.5,
-      music: 6,
+      effects: 0.05,
+      music: 0.02,
     };
   }
 
   init(data) {
+    // just to make sure
     this.disableProgress = false;
 
-    if (data.level && data.level !== this.levelController.currentLevel) {
+    // check if level has been initialized by levels view, and correct it
+    if (data.level && data.level !== this.levelController.currentLevel)
       this.levelController.setCurrentLevel(data.level);
-    }
 
+    // register shutdown event
     this.events.once("shutdown", () => this.shutdown());
+
+    // get volume from local storage
+    this.volume = this.getVolume();
+  }
+
+  getVolume() {
+    let volumeEffects = window.localStorage.getItem("volume-effects");
+    let volumeMusic = window.localStorage.getItem("volume-music");
+
+    if (volumeEffects) volumeEffects = parseFloat(volumeEffects);
+    else volumeEffects = this.volume.effects;
+
+    if (volumeMusic) volumeMusic = parseFloat(volumeMusic);
+    else volumeMusic = this.volume.music;
+
+    const volume = {
+      effects: volumeEffects,
+      music: volumeMusic,
+    };
+
+    return volume;
   }
 
   preload() {
@@ -100,12 +141,11 @@ export default class GameScene extends Phaser.Scene {
     this.cursor = this.input.keyboard.createCursorKeys();
     this.createBoundiresLines();
 
-    // Sprites
+    // Sprites, Groups
     this.player = new PlayerSprite(this, 1920 / 2, 1080 - 128, this.enemiesBoundsX);
     this.enemies = new EnemiesGroup(this, this.levelController.getCurrentLevel());
     this.ufo = new UfoSprite(this, 100, 100);
-
-    this.obstaclesGroup = new ObstaclesGroup(this);
+    this.obstacles = new ObstaclesGroup(this);
 
     // Collision detection (enemies <-> player)
     this.physics.add.overlap(this.player.bullets, this.enemies, this.enemyHit, null, this);
@@ -116,10 +156,10 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player.bullets, this.ufo, this.ufoHit, null, this);
 
     // Collision detection (obstacles <-> other)
-    this.physics.add.overlap(this.obstaclesGroup, this.enemies.bullets, this.obstacleBulletHit, null, this);
-    this.physics.add.overlap(this.obstaclesGroup, this.player.bullets, this.obstacleBulletHit, null, this);
-    this.physics.add.overlap(this.obstaclesGroup, this.enemies, o => o.onHit(), null, this);
-    this.physics.add.overlap(this.obstaclesGroup, this.ufo.bullets, this.obstacleBulletHit, null, this);
+    this.physics.add.overlap(this.obstacles, this.enemies.bullets, this.obstacleBulletHit, null, this);
+    this.physics.add.overlap(this.obstacles, this.player.bullets, this.obstacleBulletHit, null, this);
+    this.physics.add.overlap(this.obstacles, this.enemies, o => o.onHit(), null, this);
+    this.physics.add.overlap(this.obstacles, this.ufo.bullets, this.obstacleBulletHit, null, this);
 
     // UIScene obj
     this.UIScene = this.scene.get("scene-ui");
@@ -129,20 +169,22 @@ export default class GameScene extends Phaser.Scene {
 
     // visuals
     this.fadeIn();
-    this.starfiled = new StarfiledBg(this);
+    this.starfiledBg = new StarfiledBg(this);
 
     // escape menu
     this.escapeMenuNode = new EscapeMenuComponent();
 
+    // escape key handling for pause view
     this.escapeMenuNode.onReturn(() => {
       this.escapeMenuNode.hide();
       this.UIScene.onReturn();
     });
 
-    this.escapeMenuHandler();
+    // listen for esc key -> show escape menu
+    this.registerEscapeMenuListener();
   }
 
-  escapeMenuHandler() {
+  registerEscapeMenuListener() {
     this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     this.escapeKey.on("down", () => {
@@ -157,12 +199,14 @@ export default class GameScene extends Phaser.Scene {
   }
 
   shutdown() {
+    //
     this.escapeKey.destroy();
 
+    // sprites, groups
     this.ufo.destroy();
     this.player.destroy();
     this.enemies.destroy();
-    this.obstaclesGroup.destroy();
+    this.obstacles.destroy();
 
     this.time.removeAllEvents();
   }
@@ -251,7 +295,7 @@ export default class GameScene extends Phaser.Scene {
   update(time, delta) {
     this.enemies.update(time, delta);
     this.checkEnemyInvasion();
-    this.starfiled.update(time, delta);
+    this.starfiledBg.update(time, delta);
   }
 
   fadeIn() {
@@ -304,3 +348,5 @@ export default class GameScene extends Phaser.Scene {
     graphicsBoundiresLines.strokePath();
   }
 }
+
+export default GameScene;

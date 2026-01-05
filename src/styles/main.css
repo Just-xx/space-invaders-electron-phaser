@@ -249,6 +249,10 @@ html {
   text-align: center;
   margin-bottom: 48px;
   font-size: 1.35rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
 }
 
 .level-view-levels-wrapper,
@@ -323,7 +327,7 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: .8rem;
+  font-size: .75rem;
   padding: 10px 24px;
 }
 
@@ -347,7 +351,7 @@ html {
   position: absolute;
   top: 64px;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translateX(-50%);
 }
 
 .settings-view-settings-wrapper {
@@ -359,9 +363,13 @@ html {
 .setting-volume {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 48px;
   row-gap: 32px;
   column-gap: 24px;
+
+  opacity: 0;
+  transform: translateY(-32px);
+  transition: all 200ms ease-out;
 }
 
 .setting-volume * {
@@ -371,9 +379,12 @@ html {
 }
 
 .setting-volume label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .setting-volume span {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  width: 100%;
+  display: inline-block;
+  text-align: right;
 }

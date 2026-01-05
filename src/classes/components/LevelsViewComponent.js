@@ -79,7 +79,7 @@ class LevelsViewComponent {
       setTimeout(() => {
         lvlButton.style.opacity = '1';
         lvlButton.style.transform = 'translateY(0px)';
-      }, 30 * i)
+      }, 40 * (i + 1))
       
       lvlButton.addEventListener("click", e => this.handleLevelBtnClick(e));
     }

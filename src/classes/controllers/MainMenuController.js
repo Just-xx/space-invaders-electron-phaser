@@ -17,7 +17,6 @@ class MainMenuController {
     this.startBtn = document.querySelector('#menu-start-btn');
     this.updateLevel();
 
-    
     this.levelsBtn = document.querySelector('#menu-levels-btn');
     this.settingsBtn = document.querySelector('#menu-settings-btn');
 
@@ -28,12 +27,12 @@ class MainMenuController {
     this.music = new Audio(songUrl);
 
     this.music.loop = true;
-    this.music.volume = 1;
+    this.music.volume = this.settingsViewComponent.getVolume().music;
     this.music.play();
   }
 
   updateLevel() {
-    this.startBtn.innerHTML = `Start <span class="level-text">(Pozom: ${window.localStorage.getItem('current-level') || 1})<span>`
+    this.startBtn.innerHTML = `Start <span class="level-text">(Poziom - ${window.localStorage.getItem('current-level') || 1})<span>`
   }
 
   hide(opacity = 0.98) {
@@ -77,9 +76,7 @@ class MainMenuController {
     setTimeout(() => {
       this.game.style.backgroundColor = "rgba(0, 0, 0, 0.25)";
     }, 450);
-
     
-
     if (this.music.paused) {
       this.music.play();
       this.music.currentTime = 0;
@@ -99,8 +96,6 @@ class MainMenuController {
     this.hide(0.6);
     this.settingsViewComponent.show();
   }
-
-  options() {}
 }
 
 export default MainMenuController;
