@@ -110,7 +110,7 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.tweens.add({
       targets: this.flySound,
-      volume: this.scene.volume.effects,
+      volume: {from: 0, to: this.scene.volume.effects / 2},
       duration: 2000,
     });
   }
@@ -158,18 +158,18 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
 
   checkStartCondition(time) {
     if (this.inProgress) return false;
-    
+
     const depth = this.scene.enemies.depthLevel;
     const level = this.scene.levelController.currentLevel;
-    
+
     if (depth === this.lastDepth || depth === 0) return false;
     this.lastDepth = depth;
-    
+
     if (depth === 5 && this.deployCount === 0) {
       this.lastDeployed = time;
       return true;
     }
-    
+
     if (time - this.lastDeployed < 13000) {
       return false;
     }
