@@ -1,0 +1,1 @@
+export const ENEMIES_SCALES = [0.12, 0.11, 0.16, 0.12, 0.21, 0.25, 0.21];

@@ -47,10 +47,10 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
     if (this.timeToPlayNote > 0 ) return;
 
     switch(this.musicState) {
-      case 1: this.fastInv1Sound.play({ volume: this.scene.volume.effects * 1.5 }); break;
-      case 2: this.fastInv2Sound.play({ volume: this.scene.volume.effects * 1.5 }); break;
-      case 3: this.fastInv3Sound.play({ volume: this.scene.volume.effects * 1.5 }); break;
-      case 4: this.fastInv4Sound.play({ volume: this.scene.volume.effects * 1.5 }); break;
+      case 1: this.fastInv1Sound.play({ volume: this.scene.volume.effects * 10 }); break;
+      case 2: this.fastInv2Sound.play({ volume: this.scene.volume.effects * 10 }); break;
+      case 3: this.fastInv3Sound.play({ volume: this.scene.volume.effects * 10 }); break;
+      case 4: this.fastInv4Sound.play({ volume: this.scene.volume.effects * 10 }); break;
     }
 
     this.getChildren().forEach(e => e.flip())

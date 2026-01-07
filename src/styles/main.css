@@ -1,5 +1,6 @@
 @import "./fonts.css";
 @import "./vars.css";
+@import "../assets/fonts/RemixIcon_Font/remixicon.css";
 
 * {
   font-family: "Orbitron";
@@ -40,7 +41,7 @@ html {
   transition: all 400ms ease-in;
 }
 
-/* Menu styling */
+/* Main menu */
 #menu-title {
   font-size: 4.3rem;
   line-height: 90%;
@@ -58,8 +59,7 @@ html {
 #menu-subtitle {
   font-size: 1.4rem;
   font-family: "Exo";
-  color: var(--secondary);
-
+  color: #7486fc;
   font-weight: 700;
   text-shadow:
     0 0 7px rgba(255, 255, 255, 0.15),
@@ -73,7 +73,7 @@ html {
   font-size: 0.7rem;
   font-family: "Exo";
   font-weight: 700;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 #game-menu {
@@ -95,7 +95,7 @@ html {
 }
 
 .level-text {
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 .menu-btn:first-of-type {
@@ -104,7 +104,7 @@ html {
 
 .menu-btn,
 .btn,
-.setting-volume {
+.setting {
   font-family: "Orbitron";
   font-weight: 600;
   font-size: 1.15rem;
@@ -119,6 +119,17 @@ html {
   border: 4px solid rgba(255, 255, 255, 0.25);
   transition: all 60ms ease-in-out;
   width: 85%;
+  position: relative;
+}
+
+.menu-btn i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 80ms lienar;
 }
 
 .btn {
@@ -130,6 +141,10 @@ html {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.5);
   transform: scale(1.02);
+}
+
+.menu-btn:hover i {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 @keyframes floating {
@@ -253,6 +268,9 @@ html {
   justify-content: center;
   align-items: center;
   padding: 4px 0;
+  position: relative;
+  top: 0;
+  left: 0;
 }
 
 .level-view-levels-wrapper,
@@ -299,7 +317,7 @@ html {
 
 .level-view-levels-wrapper .btn span.lvl-done span {
   color: #c0ffd3;
-  font-size: .8rem;
+  font-size: 0.8rem;
   display: block;
   position: absolute;
   bottom: 8px;
@@ -311,7 +329,7 @@ html {
 .level-view-levels-wrapper .btn img {
   width: 100%;
   z-index: 0;
-  opacity: .5;
+  opacity: 0.5;
   transition: 80ms linear opacity;
   border-top: 3px solid rgba(255, 255, 255, 0.5);
   -webkit-user-drag: none;
@@ -319,7 +337,7 @@ html {
 }
 
 .level-view-levels-wrapper .btn:hover img {
-  opacity: .7;
+  opacity: 0.7;
 }
 
 .level-view-wrapper .level-view-return-btn,
@@ -327,8 +345,34 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: .75rem;
-  padding: 10px 24px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8px 0;
+  opacity: 0.85;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0;
+}
+
+.level-view-wrapper .level-view-return-btn:hover,
+.settings-view-wrapper .settings-view-return-btn:hover {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.level-view-wrapper .level-view-return-btn i,
+.settings-view-wrapper .settings-view-return-btn i {
+  margin-right: 10px;
+  opacity: 0.8;
+  transition: 80ms linear opacity;
+}
+
+.level-view-wrapper .level-view-return-btn:hover i,
+.settings-view-wrapper .settings-view-return-btn:hover i {
+  opacity: 1;
 }
 
 /* GameWon component specific */
@@ -360,31 +404,40 @@ html {
   margin-top: 64px;
 }
 
-.setting-volume {
+.setting {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 48px;
   row-gap: 32px;
   column-gap: 24px;
-
+  border-width: 2px;
+  border-radius: 8px;
   opacity: 0;
   transform: translateY(-32px);
   transition: all 200ms ease-out;
 }
 
-.setting-volume * {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+.setting label {
+  font-size: 0.825rem;
 }
 
-.setting-volume label {
-  font-size: 0.85rem;
-}
-
-.setting-volume span {
-  font-size: 0.85rem;
+.setting-value-display {
+  font-size: 0.78rem;
   width: 100%;
   display: inline-block;
   text-align: right;
+}
+
+.setting-fullscreen {
+  justify-items: end;
+  grid-template-columns: 50% 1fr 54px;
+}
+
+.setting-fullscreen label {
+  justify-self: start;
+}
+
+.setting-fullscreen input {
+  height: 100%;
+  aspect-ratio: .8;
 }

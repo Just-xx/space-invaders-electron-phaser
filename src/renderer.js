@@ -1,8 +1,10 @@
 import "./styles/main.css";
+import "./styles/media.css";
 
 import GameScene from "./scenes/GameScene.js";
 import UIScene from "./scenes/UIScene.js";
 import MainMenuController from "./classes/controllers/MainMenuController.js";
+
 
 const gameCanvas = document.querySelector("#game-canvas");
 
@@ -45,3 +47,4 @@ mainMenuController.onStart(() => {
   game.scene.start('scene-game');
   game.scene.start('scene-ui', mainMenuController);
 });
+

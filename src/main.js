@@ -2,6 +2,7 @@ import {app, BrowserWindow, nativeImage} from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import iconUrl from "./assets/icons/icon.png";
+import { ipcMain } from "electron";
 
 if (started) {
   app.quit();
@@ -11,6 +12,8 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
+    minWidth: 720,
+    minHeight: 580,
     icon: nativeImage.createFromDataURL(iconUrl),
     resizable: true,
     webPreferences: {
@@ -40,6 +43,11 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("toggle-fullscreen", (event, active) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.setFullScreen(active);
 });
 
 app.setAppUserModelId("com.squirrel.SpaceInvaders.SpaceInvaders");

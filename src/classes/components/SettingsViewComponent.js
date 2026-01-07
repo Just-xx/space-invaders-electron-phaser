@@ -21,15 +21,17 @@ class SettingsViewComponent {
 
     this.wrapper.appendChild(this.settingsWrapper);
 
-    this.addVolumeSection("Głośność efektów: ", "volume-effects");
-    this.addVolumeSection("Głośność muzyki: ", "volume-music");
+    // actual settings
+    this.addVolumeControl("Głośność efektów: ", "volume-effects");
+    this.addVolumeControl("Głośność muzyki: ", "volume-music");
+    this.addFullscreenToggle("Tryb pełnoeranowy: ", "fullscreen");
 
     // return btn
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("settings-view-return-btn");
 
-    this.returnBtn.textContent = "Powrót";
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
 
     this.returnBtn.addEventListener("click", () => {
       this.hide();
@@ -41,11 +43,17 @@ class SettingsViewComponent {
     // mount and hide
     this.mount();
     this.hide();
+
+    // other
+    this.applyFullscreenMode(this.getFullscreenMode());
   }
 
-  addVolumeSection(text, id) {
+  addVolumeControl(text, id) {
+    // "id" is used both for html element id and name of the option in local storage
+
     const settingWrapper = document.createElement("div");
     settingWrapper.classList.add("setting-volume");
+    settingWrapper.classList.add("setting");
 
     const settingLabel = document.createElement("label");
     settingLabel.textContent = text;
@@ -72,6 +80,63 @@ class SettingsViewComponent {
     this.settingsWrapper.appendChild(settingWrapper);
   }
 
+  getVolume() {
+    let volumeEffects = window.localStorage.getItem("volume-effects");
+    let volumeMusic = window.localStorage.getItem("volume-music");
+
+    if (volumeEffects) volumeEffects = parseFloat(volumeEffects);
+    else volumeEffects = 0.3;
+
+    if (volumeMusic) volumeMusic = parseFloat(volumeMusic);
+    else volumeMusic = 0.15;
+
+    const volume = {
+      effects: volumeEffects,
+      music: volumeMusic,
+    };
+
+    return volume;
+  }
+
+  addFullscreenToggle(text, id) {
+    const settingWrapper = document.createElement("div");
+    settingWrapper.classList.add("setting-fullscreen");
+    settingWrapper.classList.add("setting");
+
+    const settingLabel = document.createElement("label");
+    settingLabel.textContent = text;
+    settingLabel.htmlFor = id;
+    settingWrapper.appendChild(settingLabel);
+
+    const isActive = this.getFullscreenMode();
+
+    const settingInput = document.createElement("input");
+    settingInput.type = "checkbox";
+    settingInput.id = id;
+    settingInput.name = id;
+    settingInput.checked = isActive;
+    settingWrapper.appendChild(settingInput);
+
+    const displayText = document.createElement("span");
+    displayText.classList.add("setting-value-display");
+    displayText.textContent = isActive ? "Wł." : "Wył.";
+    settingWrapper.appendChild(displayText);
+
+    this.settingsWrapper.appendChild(settingWrapper);
+
+    settingInput.addEventListener("input", e => this.handleFullscreenModeChange(e, displayText));
+    displayText.addEventListener("click", () => {
+      settingInput.checked = !settingInput.checked;
+      this.handleFullscreenModeChange({target: settingInput}, displayText);
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      const isActive = document.fullscreenElement ? true : false;
+      settingInput.checked = isActive;
+      displayText.textContent = isActive ? "Wł." : "Wył.";
+    });
+  }
+
   handleVolumeChange(e, displayText) {
     const val = e.target.value;
     const id = e.target.id;
@@ -82,22 +147,27 @@ class SettingsViewComponent {
     this.mainMenuController.music.volume = this.getVolume().music;
   }
 
-  getVolume() {
-    let volumeEffects = window.localStorage.getItem("volume-effects");
-    let volumeMusic = window.localStorage.getItem("volume-music");
+  handleFullscreenModeChange(e, displayText) {
+    const checked = e.target.checked ? 1 : 0;
+    const id = e.target.id;
 
-    if (volumeEffects) volumeEffects = parseFloat(volumeEffects);
-    else volumeEffects = 0.05;
+    displayText.textContent = checked ? "Wł." : "Wył.";
 
-    if (volumeMusic) volumeMusic = parseFloat(volumeMusic);
-    else volumeMusic = 0.02;
+    window.localStorage.setItem(id, checked);
+    this.applyFullscreenMode(this.getFullscreenMode());
+  }
 
-    const volume = {
-      effects: volumeEffects,
-      music: volumeMusic,
-    };
+  applyFullscreenMode(checked) {
+    window.electronAPI.toggleFullScreen(checked);
+  }
 
-    return volume;
+  getFullscreenMode() {
+    let fsActive = window.localStorage.getItem("fullscreen");
+
+    if (fsActive) fsActive = parseInt(fsActive);
+    else fsActive = 0;
+
+    return fsActive;
   }
 
   hide() {
@@ -110,8 +180,8 @@ class SettingsViewComponent {
       const settingWrappersRows = this.settingsWrapper.children;
       for (let i = 0; i < settingWrappersRows.length; i++) {
         const row = settingWrappersRows[i];
-        row.style.opacity = '';
-        row.style.transform = '';
+        row.style.opacity = "";
+        row.style.transform = "";
       }
     }, 200);
   }

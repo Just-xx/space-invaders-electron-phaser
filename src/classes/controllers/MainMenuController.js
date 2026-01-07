@@ -32,7 +32,7 @@ class MainMenuController {
   }
 
   updateLevel() {
-    this.startBtn.innerHTML = `Start <span class="level-text">(Poziom - ${window.localStorage.getItem('current-level') || 1})<span>`
+    this.startBtn.innerHTML = `Start <span class="level-text">(Poziom - ${window.localStorage.getItem('current-level') || 1})</span><i class="ri-play-line"></i>`
   }
 
   hide(opacity = 0.98) {

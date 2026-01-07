@@ -1,0 +1,53 @@
+@media (max-width: 1320px) {
+  #hero-menu-img {
+    width: 500px;
+  }
+
+  .menu-btn {
+    /* font-size: 1rem; */
+    width: 90%;
+  }
+
+  /* #menu-title {
+    font-size: 3.7rem;
+  }
+
+  #menu-subtitle {
+    font-size: 1.25rem;
+  }
+
+  #menu-author {
+    font-size: 0.6rem;
+  } */
+}
+
+@media (max-width: 1096px) {
+
+  html, body {
+    font-size: 19px;
+  }
+
+  .hero-menu-img-wrapper {
+    display: none;
+  }
+
+  .level-view-levels-wrapper .btn span.lvl-done span {
+    font-size: .7rem;
+  }
+
+  .level-view-levels-wrapper .btn span {
+    /* font-size: 1rem; */
+  }
+
+  .level-view-levels-wrapper {
+    gap: 10px;
+  }
+
+  .level-view-levels-wrapper .btn {
+    border-width: 2px;
+  }
+
+  .level-view-levels-wrapper .btn img {
+    border-width: 2px;
+  }
+}

@@ -38,7 +38,7 @@ class LevelsViewComponent {
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("level-view-return-btn");
 
-    this.returnBtn.textContent = "Powrót";
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
 
     this.returnBtn.addEventListener("click", () => {
       this.hide();

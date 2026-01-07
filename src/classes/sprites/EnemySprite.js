@@ -1,14 +1,6 @@
-const ENEMY_TYPES = [
-  "enemy-type0",
-  "enemy-type1",
-  "enemy-type2",
-  "enemy-type3",
-  "enemy-type4",
-  "enemy-type5",
-  "enemy-type6",
-];
+import { ENEMIES_SCALES } from "../../constants/ENEMIES_SCALES";
+import { ENEMY_TYPES } from "../../constants/ENEMY_TYPES";
 
-const ENEMIES_SCALES = [0.11, 0.1, 0.15, 0.11, 0.2, 0.24, 0.2];
 
 class EnemySprite extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, enemyType, health = 100) {
@@ -51,7 +43,7 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  #updateHealthBar() {
+  updateHealthBar() {
     // activate when health below max value
     if (!this.healthBarActive) {
       this.healthBarActive = true;
@@ -86,7 +78,7 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
       this.hitSound.play({volume: this.scene.volume.effects});
     }
 
-    this.#updateHealthBar();
+    this.updateHealthBar();
 
     if (this.health === 0) {
       this.particles.explode(20, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
