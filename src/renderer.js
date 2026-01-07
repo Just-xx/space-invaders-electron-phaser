@@ -5,7 +5,6 @@ import GameScene from "./scenes/GameScene.js";
 import UIScene from "./scenes/UIScene.js";
 import MainMenuController from "./classes/controllers/MainMenuController.js";
 
-
 const gameCanvas = document.querySelector("#game-canvas");
 
 const config = {
@@ -31,20 +30,25 @@ const config = {
     target: 60,
     forceSetTimeOut: false,
     limit: 0,
+  },
+  audio: {
+    disableWebAudio: false,
+    noAudio: false,
   }
 };
 
 const game = new Phaser.Game(config);
 const mainMenuController = new MainMenuController(game);
 
+window.game = game;
+
 game.showGameCanvas = () => {
   const gameCanvas = document.querySelector("#game-canvas");
   gameCanvas.style.opacity = 1;
-}
+};
 
 mainMenuController.onStart(() => {
   game.showGameCanvas();
-  game.scene.start('scene-game');
-  game.scene.start('scene-ui', mainMenuController);
+  game.scene.start("scene-game");
+  game.scene.start("scene-ui", mainMenuController);
 });
-
