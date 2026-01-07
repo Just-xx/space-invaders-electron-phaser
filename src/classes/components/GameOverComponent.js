@@ -37,11 +37,11 @@ class GameOverComponent {
     this.resartBtn.classList.add("btn");
     this.returnBtn.classList.add("btn");
 
-    this.resartBtn.textContent = "Spróbuj ponownie";
-    this.returnBtn.textContent = "Powrót";
+    this.resartBtn.innerHTML = `<i class="ri-restart-line"></i> Spróbuj ponownie`;
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i> Powrót`;
 
-    this.btnsWrapper.appendChild(this.resartBtn);
     this.btnsWrapper.appendChild(this.returnBtn);
+    this.btnsWrapper.appendChild(this.resartBtn);
 
     this.wrapper.appendChild(this.btnsWrapper);
     this.wrapper.style.display = "none";

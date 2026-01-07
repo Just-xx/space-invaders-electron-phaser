@@ -37,11 +37,11 @@ class LevelCompleteComponent {
     this.nextLvlBtn.classList.add("btn");
     this.returnBtn.classList.add("btn");
 
-    this.nextLvlBtn.textContent = "Następny poziom";
-    this.returnBtn.textContent = "Powrót";
+    this.nextLvlBtn.innerHTML = `Następny poziom <i class="ri-arrow-right-fill"></i>`;
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i> Powrót`;
 
-    this.btnsWrapper.appendChild(this.nextLvlBtn);
     this.btnsWrapper.appendChild(this.returnBtn);
+    this.btnsWrapper.appendChild(this.nextLvlBtn);
 
     this.wrapper.appendChild(this.btnsWrapper);
     this.wrapper.style.display = "none";

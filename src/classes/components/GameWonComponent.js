@@ -23,7 +23,7 @@ class GameWonComponent {
     this.btnsWrapper.classList.add("node-btns-wrapper");
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
-    this.returnBtn.textContent = "Powrót do menu";
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i> Powrót do menu`;
 
     this.btnsWrapper.appendChild(this.returnBtn);
 

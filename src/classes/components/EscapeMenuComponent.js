@@ -24,11 +24,11 @@ class EscapeMenuComponent {
     this.continueBtn.classList.add("btn");
     this.returnBtn.classList.add("btn");
 
-    this.continueBtn.textContent = "Kontynuuj";
-    this.returnBtn.textContent = "Powrót";
+    this.continueBtn.innerHTML = `<i class="ri-play-line"></i> Kontynuuj`;
+    this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i> Powrót`;
 
-    this.btnsWrapper.appendChild(this.continueBtn);
     this.btnsWrapper.appendChild(this.returnBtn);
+    this.btnsWrapper.appendChild(this.continueBtn);
 
     this.wrapper.appendChild(this.btnsWrapper);
     this.wrapper.style.display = "none";
