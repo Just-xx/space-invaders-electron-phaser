@@ -75,6 +75,11 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     super.preUpdate(time, delta);
     if (this.y <= 0 || this.y > this.scene.sys.game.config.height) this.onHit();
   }
+
+  destroy() {
+    this.shootSound.destroy();
+    super.destroy();
+  }
 }
 
 export default Bullet;

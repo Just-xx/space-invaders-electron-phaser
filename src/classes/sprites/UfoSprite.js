@@ -154,6 +154,8 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
 
   destroy() {
     this.flySound.stop();
+    this.flySound.destroy();
+    this.explosionSound.destroy();
   }
 
   checkStartCondition(time) {

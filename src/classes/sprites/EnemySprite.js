@@ -103,6 +103,8 @@ class EnemySprite extends Phaser.Physics.Arcade.Sprite {
 
   destroy(fromScene) {
     this.healthBar.destroy();
+    this.hitSound.destroy();
+    this.explosionSound.destroy()
     super.destroy(fromScene);
   }
 }

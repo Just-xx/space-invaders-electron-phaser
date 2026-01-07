@@ -27,8 +27,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.bullets = new BulletsGroup(this.scene);
     this.createParticles();
 
-    this.explosionSound = this.scene.sound.add('explosion').setDetune(-500);
-    this.hitSound = this.scene.sound.add('inv-killed').setDetune(1000);
+    this.explosionSound = this.scene.sound.add("explosion").setDetune(-500);
+    this.hitSound = this.scene.sound.add("inv-killed").setDetune(1000);
   }
 
   createParticles() {
@@ -157,11 +157,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       },
     });
 
-    this.hitSound.play({ volume: this.scene.volume.effects })
+    this.hitSound.play({volume: this.scene.volume.effects});
   }
 
   destroyEffect() {
-
     this.inputsActive = false;
     this.destroyParticles.explode(60, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
     this.scene.tweens.add({
@@ -171,8 +170,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       ease: "EaseIn",
     });
 
-    this.explosionSound.play({ volume: this.scene.volume.effects })
-
+    this.explosionSound.play({volume: this.scene.volume.effects});
   }
 
   onHit(bullet) {
@@ -181,6 +179,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (this.lives <= 0) this.gameOver();
     else this.respawnEffect(bullet);
+  }
+
+  destroy() {
+    this.explosionSound.destroy();
+    this.hitSound.destroy();
+    super.destroy();
   }
 }
 

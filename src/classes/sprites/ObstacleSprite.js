@@ -27,6 +27,11 @@ class ObstacleSprite extends Phaser.Physics.Arcade.Sprite {
     this.hitSound.play({ volume: this.scene.volume.effects / 2 })
     this.destroy();
   }
+
+  destroy() {
+    this.hitSound.destroy();
+    super.destroy()
+  }
 }
 
 export default ObstacleSprite;

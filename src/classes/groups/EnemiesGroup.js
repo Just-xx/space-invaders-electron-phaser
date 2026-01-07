@@ -221,6 +221,14 @@ class EnemiesGroup extends Phaser.Physics.Arcade.Group {
       }
     });
   }
+
+  destroy() {
+    this.fastInv1Sound.destroy();
+    this.fastInv2Sound.destroy();
+    this.fastInv3Sound.destroy();
+    this.fastInv4Sound.destroy();
+    super.destroy()
+  }
 }
 
 export default EnemiesGroup;
