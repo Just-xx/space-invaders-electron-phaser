@@ -8,9 +8,10 @@ In this game, the player controls a spaceship at the bottom of the screen, taske
 
 ## Controls
 
--   **Left Arrow**: Move the ship to the left.
--   **Right Arrow**: Move the ship to the right.
--   **Space**: Shots.
+-   **Left Arrow**: Moving the ship to the left.
+-   **Right Arrow**: Moving the ship to the right.
+-   **Space**: Shooting
+-   **Escape**: Pasue
 
 ## Tech
 
