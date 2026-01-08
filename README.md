@@ -1,4 +1,4 @@
-# Space Invaders Clone
+# Space Invaders ("Inwazja 2.0")
 
 A simple implementation of the classic Space Invaders game created using the Phaser 3 framework and Electron.
 
