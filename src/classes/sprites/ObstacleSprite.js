@@ -28,9 +28,9 @@ class ObstacleSprite extends Phaser.Physics.Arcade.Sprite {
     this.destroy();
   }
 
-  destroy() {
+  destroy(fromScene) {
     this.hitSound.destroy();
-    super.destroy()
+    super.destroy(fromScene)
   }
 }
 

@@ -142,10 +142,11 @@ class UIScene extends Scene {
     this.events.emit("return");
 
     // deactivate all scenes
-    this.scene.stop("scene-ui");
-    this.scene.stop("scene-game");
     this.scene.setVisible(false, "scene-game");
     this.scene.setVisible(false, "scene-ui");
+    
+    this.scene.stop("scene-ui");
+    this.scene.stop("scene-game");
   }
 
   shutdown() {

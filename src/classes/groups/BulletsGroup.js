@@ -4,16 +4,14 @@ class BulletsGroup extends Phaser.Physics.Arcade.Group {
   constructor(scene) {
     super(scene.physics.world, scene);
     this.scene = scene;
-
     // properties for player shots
-    this.shotPossible = true;
-    this.cooldown = 300; // in ms
-
+    this.shootPossible = true;
+    this.cooldown = 280; // only for player in ms
     this.classType = Bullet;
   }
 
   handleInput(player) {
-    if (!this.scene.cursor.space.isDown || !this.shotPossible) return;
+    if (!this.scene.cursor.space.isDown || !this.shootPossible) return;
 
     const x = player.x + player.displayWidth / 2;
     const y = player.y;
@@ -23,9 +21,9 @@ class BulletsGroup extends Phaser.Physics.Arcade.Group {
       bullet.fire(x, y);
     }
 
-    this.shotPossible = false;
+    this.shootPossible = false;
 
-    setTimeout(() => (this.shotPossible = true), this.cooldown);
+    setTimeout(() => (this.shootPossible = true), this.cooldown);
   }
 
   handleEnemyFire(enemy, chance) {

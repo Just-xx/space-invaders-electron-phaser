@@ -181,10 +181,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     else this.respawnEffect(bullet);
   }
 
-  destroy() {
+  destroy(fromScene) {
     this.explosionSound.destroy();
     this.hitSound.destroy();
-    super.destroy();
+    super.destroy(fromScene);
   }
 }
 

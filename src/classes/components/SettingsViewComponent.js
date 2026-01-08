@@ -21,10 +21,10 @@ class SettingsViewComponent {
 
     this.wrapper.appendChild(this.settingsWrapper);
 
-    // actual settings
+    // add settings elements
     this.addVolumeControl("Głośność efektów: ", "volume-effects");
     this.addVolumeControl("Głośność muzyki: ", "volume-music");
-    this.addFullscreenToggle("Tryb pełnoeranowy: ", "fullscreen");
+    this.addFullscreenToggle("Tryb pełnoekranowy: ", "fullscreen");
 
     // return btn
     this.returnBtn = document.createElement("button");

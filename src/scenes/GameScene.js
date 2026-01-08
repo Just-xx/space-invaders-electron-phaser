@@ -172,7 +172,7 @@ class GameScene extends Phaser.Scene {
     this.starfiledBg = new StarfiledBg(this);
 
     // escape menu
-    this.escapeMenuNode = new EscapeMenuComponent();
+    this.escapeMenuNode = new EscapeMenuComponent(); 
 
     // escape key handling for pause view
     this.escapeMenuNode.onReturn(() => {
@@ -199,7 +199,6 @@ class GameScene extends Phaser.Scene {
   }
 
   shutdown() {
-    //
     this.escapeKey.destroy();
 
     // sprites, groups
@@ -219,8 +218,11 @@ class GameScene extends Phaser.Scene {
         level: this.levelController.currentLevel,
         ...additionalData,
       });
-    } // try again after delay if scene not active
-    else this.time.delayedCall(50, () => this.updateUI());
+    }
+    // try again after delay if scene not active
+    else {
+      this.time.delayedCall(50, () => this.updateUI());
+    }
   }
 
   levelComplete() {
@@ -279,7 +281,7 @@ class GameScene extends Phaser.Scene {
   }
 
   // Collision detection
-  checkEnemyInvasion() {
+  checkInvasion() {
     if (this.disableProgress) return;
     if (this.player.lives <= 0) return;
     const enemies = this.enemies.getChildren();
@@ -294,7 +296,7 @@ class GameScene extends Phaser.Scene {
 
   update(time, delta) {
     this.enemies.update(time, delta);
-    this.checkEnemyInvasion();
+    this.checkInvasion();
     this.starfiledBg.update(time, delta);
   }
 

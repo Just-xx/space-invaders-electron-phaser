@@ -140,22 +140,22 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       this.scene.time.delayedCall(timeToStart, () => this.start(Math.round(Math.random())));
     }
 
+    this.autoShooting();
+
+    // stop sound effect after sequnce
+    if (!this.inProgress && this.flySound.isPlaying) this.stopFlySound();
+  }
+
+  autoShooting() {
     if (
       this.inProgress &&
       this.visible &&
       this.x > this.scene.boundsX.left + 128 &&
       this.x < this.scene.boundsX.right - 128
     ) {
-      this.bullets.handleEnemyFire(this, (3 / this.scene.levelController.currentLevel) * 50);
+      const shotChance = (3 / this.scene.levelController.currentLevel) * 60;
+      this.bullets.handleEnemyFire(this, shotChance);
     }
-
-    if (!this.inProgress && this.flySound.isPlaying) this.stopFlySound();
-  }
-
-  destroy() {
-    this.flySound.stop();
-    this.flySound.destroy();
-    this.explosionSound.destroy();
   }
 
   checkStartCondition(time) {
@@ -167,7 +167,8 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     if (depth === this.lastDepth || depth === 0) return false;
     this.lastDepth = depth;
 
-    if (depth === 5 && this.deployCount === 0) {
+    console.log("[UFO] DEPTH: ", depth);
+    if (depth === 3 && this.deployCount === 0) {
       this.lastDeployed = time;
       return true;
     }
@@ -202,6 +203,13 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(false);
     this.setPosition(-300, -300);
     this.inProgress = false;
+  }
+
+  destroy(fromScene) {
+    this.flySound.stop();
+    this.flySound.destroy();
+    this.explosionSound.destroy();
+    super.destroy(fromScene);
   }
 }
 
