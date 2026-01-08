@@ -153,7 +153,7 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
       this.x > this.scene.boundsX.left + 128 &&
       this.x < this.scene.boundsX.right - 128
     ) {
-      const shotChance = (3 / this.scene.levelController.currentLevel) * 60;
+      const shotChance = 20 / this.scene.levelController.currentLevel + 12;
       this.bullets.handleEnemyFire(this, shotChance);
     }
   }
@@ -168,7 +168,8 @@ class UfoSprite extends Phaser.Physics.Arcade.Sprite {
     this.lastDepth = depth;
 
     console.log("[UFO] DEPTH: ", depth);
-    if (depth === 3 && this.deployCount === 0) {
+    console.log("[UFO] DEPLOY COUNT: ", this.deployCount);
+    if ((depth === 5 && this.deployCount === 0) || (depth === 2 && this.deployCount === 0 && level < 6)) {
       this.lastDeployed = time;
       return true;
     }
