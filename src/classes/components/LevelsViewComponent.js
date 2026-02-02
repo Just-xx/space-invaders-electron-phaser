@@ -1,7 +1,7 @@
-// Importowanie obrazów poziomów
+// Importowanie obrazów poziomów.
 const lvlImgsGlob = import.meta.glob("../../assets/levels/*.{png,jpg,jpeg,svg}", {eager: true});
 
-// Przetwarzanie zaimportowanych obrazów na obiekt, gdzie kluczem jest numer poziomu
+// Przetwarzanie zaimportowanych obrazów na obiekt, gdzie kluczem jest numer poziomu.
 const lvlImgs = Object.fromEntries(
   Object.entries(lvlImgsGlob).map(([path, module]) => {
     return [
@@ -11,35 +11,16 @@ const lvlImgs = Object.fromEntries(
   })
 );
 
-/**
- * Reprezentuje komponent widoku wyboru poziomów.
- * Pozwala graczowi wybrać poziom do rozegrania.
- */
+// Reprezentuje komponent widoku wyboru poziomów.
 class LevelsViewComponent {
-  /**
-   * Tworzy instancję komponentu widoku poziomów.
-   * @param {MainMenuController} mainMenuController - Kontroler menu głównego.
-   * @param {Phaser.Game} game - Instancja gry Phaser.
-   */
+  // Tworzy instancję komponentu widoku poziomów.
   constructor(mainMenuController, game) {
-    /**
-     * @property {Phaser.Game} game - Instancja gry Phaser.
-     */
     this.game = game;
-    /**
-     * @property {boolean} mounted - Wskazuje, czy komponent jest zamontowany w DOM.
-     */
     this.mounted = false;
-    /**
-     * @property {MainMenuController} mainMenuController - Kontroler menu głównego.
-     */
     this.mainMenuController = mainMenuController;
-    /**
-     * @property {Function} boundHandleEscapeKey - Powiązana funkcja obsługi klawisza Escape.
-     */
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
-    // Utworzenie głównych elementów DOM dla komponentu
+    // Utworzenie głównych elementów DOM dla komponentu.
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("level-view-wrapper");
 
@@ -54,8 +35,7 @@ class LevelsViewComponent {
     this.generateLevelBtns();
 
     this.returnBtn = document.createElement("button");
-    this.returnBtn.classList.add("btn");
-    this.returnBtn.classList.add("level-view-return-btn");
+    this.returnBtn.classList.add("btn", "level-view-return-btn");
     this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
     this.returnBtn.addEventListener("click", () => {
       this.hide();
@@ -67,9 +47,7 @@ class LevelsViewComponent {
     this.hide();
   }
 
-  /**
-   * Generuje przyciski wyboru poziomu na podstawie dostępnych obrazów i ukończonych poziomów.
-   */
+  // Generuje przyciski wyboru poziomu.
   generateLevelBtns() {
     let passedLevels = window.localStorage.getItem("passed-levels");
     passedLevels = passedLevels ? passedLevels.split(",").map(item => parseInt(item)) : [];
@@ -101,10 +79,7 @@ class LevelsViewComponent {
     }
   }
 
-  /**
-   * Obsługuje kliknięcie przycisku wyboru poziomu, uruchamiając odpowiednią scenę gry.
-   * @param {Event} e - Zdarzenie kliknięcia.
-   */
+  // Obsługuje kliknięcie przycisku wyboru poziomu.
   handleLevelBtnClick(e) {
     const level = parseInt(e.currentTarget.dataset.level);
 
@@ -116,9 +91,7 @@ class LevelsViewComponent {
     this.mainMenuController.hide();
   }
 
-  /**
-   * Ukrywa komponent widoku poziomów.
-   */
+  // Ukrywa komponent widoku poziomów.
   hide() {
     window.removeEventListener("keydown", this.boundHandleEscapeKey);
     this.wrapper.style.opacity = "0";
@@ -127,10 +100,7 @@ class LevelsViewComponent {
     }, 200);
   }
 
-  /**
-   * Obsługuje naciśnięcie klawisza Escape, aby powrócić do menu głównego.
-   * @param {KeyboardEvent} e - Zdarzenie klawiatury.
-   */
+  // Obsługuje naciśnięcie klawisza Escape.
   handleEscapeKey(e) {
     if (e.key === "Escape") {
       this.hide();
@@ -138,9 +108,7 @@ class LevelsViewComponent {
     }
   }
 
-  /**
-   * Pokazuje komponent widoku poziomów i ponownie generuje przyciski.
-   */
+  // Pokazuje komponent widoku poziomów.
   show() {
     this.wrapper.style.display = "block";
     this.wrapper.style.opacity = "0";
@@ -154,9 +122,7 @@ class LevelsViewComponent {
     }, 200);
   }
 
-  /**
-   * Montuje komponent w DOM, dołączając go do elementu gry.
-   */
+  // Montuje komponent w DOM.
   mount() {
     if (this.mounted) return;
     this.mounted = true;

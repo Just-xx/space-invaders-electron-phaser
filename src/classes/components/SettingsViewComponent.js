@@ -1,20 +1,13 @@
-/**
- * Reprezentuje komponent widoku ustawień.
- * Pozwala graczowi na dostosowanie głośności i trybu pełnoekranowego.
- */
+// Reprezentuje komponent widoku ustawień.
 class SettingsViewComponent {
-  /**
-   * Tworzy instancję komponentu widoku ustawień.
-   * @param {MainMenuController} mainMenuController - Kontroler menu głównego.
-   * @param {Phaser.Game} game - Instancja gry Phaser.
-   */
+  // Tworzy instancję komponentu widoku ustawień.
   constructor(mainMenuController, game) {
     this.game = game;
     this.mounted = false;
     this.mainMenuController = mainMenuController;
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
-    // Utworzenie głównych elementów DOM
+    // Utworzenie głównych elementów DOM.
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("settings-view-wrapper");
 
@@ -26,15 +19,14 @@ class SettingsViewComponent {
     this.settingsWrapper.classList.add("settings-view-settings-wrapper");
     this.wrapper.appendChild(this.settingsWrapper);
 
-    // Dodanie kontrolek ustawień
+    // Dodanie kontrolek ustawień.
     this.addVolumeControl("Głośność efektów: ", "volume-effects");
     this.addVolumeControl("Głośność muzyki: ", "volume-music");
     this.addFullscreenToggle("Tryb pełnoekranowy: ", "fullscreen");
 
-    // Przycisk powrotu
+    // Przycisk powrotu.
     this.returnBtn = document.createElement("button");
-    this.returnBtn.classList.add("btn");
-    this.returnBtn.classList.add("settings-view-return-btn");
+    this.returnBtn.classList.add("btn", "settings-view-return-btn");
     this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
     this.returnBtn.addEventListener("click", () => {
       this.hide();
@@ -45,15 +37,11 @@ class SettingsViewComponent {
     this.mount();
     this.hide();
 
-    // Zastosowanie trybu pełnoekranowego przy starcie
+    // Zastosowanie trybu pełnoekranowego przy starcie.
     this.applyFullscreenMode(this.getFullscreenMode());
   }
 
-  /**
-   * Dodaje kontrolkę głośności (suwak) do widoku ustawień.
-   * @param {string} text - Etykieta kontrolki.
-   * @param {string} id - ID dla elementu i klucz w localStorage.
-   */
+  // Dodaje kontrolkę głośności (suwak).
   addVolumeControl(text, id) {
     const settingWrapper = document.createElement("div");
     settingWrapper.classList.add("setting-volume", "setting");
@@ -82,10 +70,7 @@ class SettingsViewComponent {
     this.settingsWrapper.appendChild(settingWrapper);
   }
 
-  /**
-   * Pobiera ustawienia głośności z localStorage lub zwraca wartości domyślne.
-   * @returns {{effects: number, music: number}} Obiekt z poziomami głośności.
-   */
+  // Pobiera ustawienia głośności z localStorage lub zwraca wartości domyślne.
   getVolume() {
     let volumeEffects = window.localStorage.getItem("volume-effects");
     let volumeMusic = window.localStorage.getItem("volume-music");
@@ -96,11 +81,7 @@ class SettingsViewComponent {
     return { effects: volumeEffects, music: volumeMusic };
   }
 
-  /**
-   * Dodaje przełącznik trybu pełnoekranowego.
-   * @param {string} text - Etykieta przełącznika.
-   * @param {string} id - ID dla elementu i klucz w localStorage.
-   */
+  // Dodaje przełącznik trybu pełnoekranowego.
   addFullscreenToggle(text, id) {
     const settingWrapper = document.createElement("div");
     settingWrapper.classList.add("setting-fullscreen", "setting");
@@ -139,11 +120,7 @@ class SettingsViewComponent {
     });
   }
 
-  /**
-   * Obsługuje zmianę wartości głośności i zapisuje ją w localStorage.
-   * @param {Event} e - Zdarzenie input.
-   * @param {HTMLElement} displayText - Element do wyświetlania wartości.
-   */
+  // Obsługuje zmianę wartości głośności i zapisuje ją w localStorage.
   handleVolumeChange(e, displayText) {
     const val = e.target.value;
     const id = e.target.id;
@@ -154,11 +131,7 @@ class SettingsViewComponent {
     this.mainMenuController.music.volume = this.getVolume().music;
   }
 
-  /**
-   * Obsługuje zmianę trybu pełnoekranowego i zapisuje stan w localStorage.
-   * @param {Event} e - Zdarzenie input.
-   * @param {HTMLElement} displayText - Element do wyświetlania stanu.
-   */
+  // Obsługuje zmianę trybu pełnoekranowego i zapisuje stan w localStorage.
   handleFullscreenModeChange(e, displayText) {
     const checked = e.target.checked ? 1 : 0;
     const id = e.target.id;
@@ -168,26 +141,18 @@ class SettingsViewComponent {
     this.applyFullscreenMode(!!checked);
   }
 
-  /**
-   * Włącza lub wyłącza tryb pełnoekranowy za pomocą Electron API.
-   * @param {boolean} checked - Czy tryb pełnoekranowy ma być włączony.
-   */
+  // Włącza lub wyłącza tryb pełnoekranowy.
   applyFullscreenMode(checked) {
     window.electronAPI.toggleFullScreen(checked);
   }
 
-  /**
-   * Pobiera stan trybu pełnoekranowego z localStorage.
-   * @returns {number} 1, jeśli włączony, 0, jeśli wyłączony.
-   */
+  // Pobiera stan trybu pełnoekranowego z localStorage.
   getFullscreenMode() {
     const fsActive = window.localStorage.getItem("fullscreen");
     return fsActive ? parseInt(fsActive) : 0;
   }
 
-  /**
-   * Ukrywa komponent widoku ustawień z animacją.
-   */
+  // Ukrywa komponent widoku ustawień.
   hide() {
     window.removeEventListener("keydown", this.boundHandleEscapeKey);
     this.wrapper.style.opacity = "0";
@@ -201,9 +166,7 @@ class SettingsViewComponent {
     }, 200);
   }
 
-  /**
-   * Pokazuje komponent widoku ustawień z animacją.
-   */
+  // Pokazuje komponent widoku ustawień.
   show() {
     window.addEventListener("keydown", this.boundHandleEscapeKey);
     this.wrapper.style.display = "block";
@@ -219,10 +182,7 @@ class SettingsViewComponent {
     }
   }
 
-  /**
-   * Obsługuje naciśnięcie klawisza Escape, aby powrócić do menu głównego.
-   * @param {KeyboardEvent} e - Zdarzenie klawiatury.
-   */
+  // Obsługuje naciśnięcie klawisza Escape.
   handleEscapeKey(e) {
     if (e.key === "Escape") {
       this.hide();
@@ -230,9 +190,7 @@ class SettingsViewComponent {
     }
   }
 
-  /**
-   * Montuje komponent w DOM, jeśli nie został jeszcze zamontowany.
-   */
+  // Montuje komponent w DOM.
   mount() {
     if (this.mounted) return;
     this.mounted = true;

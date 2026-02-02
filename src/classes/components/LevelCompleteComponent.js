@@ -1,18 +1,11 @@
-/**
- * Reprezentuje komponent ekranu ukończenia poziomu.
- * Wyświetlany, gdy gracz pomyślnie ukończy poziom.
- */
+// Reprezentuje komponent ekranu ukończenia poziomu.
 class LevelCompleteComponent {
-  /**
-   * Tworzy instancję komponentu ukończenia poziomu.
-   */
+  // Tworzy instancję komponentu ukończenia poziomu.
   constructor() {
-    /**
-     * @property {boolean} mounted - Wskazuje, czy komponent jest zamontowany w DOM.
-     */
+    // Wskazuje, czy komponent jest zamontowany w DOM.
     this.mounted = false;
 
-    // Utworzenie głównych elementów DOM dla komponentu
+    // Utworzenie głównych elementów DOM dla komponentu.
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
 
@@ -57,26 +50,20 @@ class LevelCompleteComponent {
     this.hide();
   }
 
-  /**
-   * Montuje komponent w DOM, dołączając go do elementu gry.
-   */
+  // Montuje komponent w DOM.
   mount() {
     if (this.mounted) return;
     this.mounted = true;
     document.querySelector("#game").appendChild(this.wrapper);
   }
 
-  /**
-   * Pokazuje ekran ukończenia poziomu.
-   */
+  // Pokazuje ekran ukończenia poziomu.
   show() {
     this.wrapper.style.display = "flex";
     this.wrapper.style.opacity = "1";
   }
 
-  /**
-   * Ukrywa ekran ukończenia poziomu.
-   */
+  // Ukrywa ekran ukończenia poziomu.
   hide() {
     this.wrapper.style.opacity = "0";
     setTimeout(() => {
@@ -84,34 +71,22 @@ class LevelCompleteComponent {
     }, 200);
   }
 
-  /**
-   * Ustawia wyświetlany wynik.
-   * @param {number} score - Wynik gracza.
-   */
+  // Ustawia wyświetlany wynik.
   setScore(score) {
     this.scoreText.innerHTML = `Uzyskany wynik: <b>${score}</b>`;
   }
 
-  /**
-   * Ustawia wyświetlany numer ukończonego poziomu.
-   * @param {number} level - Numer ukończonego poziomu.
-   */
+  // Ustawia wyświetlany numer ukończonego poziomu.
   setLevel(level) {
     this.levelText.innerHTML = `Ukończony poziom: <b>${level}</b>`;
   }
 
-  /**
-   * Rejestruje funkcję zwrotną dla kliknięcia przycisku "Następny poziom".
-   * @param {Function} cb - Funkcja zwrotna.
-   */
+  // Rejestruje funkcję zwrotną dla przycisku "Następny poziom".
   onNextLevelClick(cb) {
     this.nextLvlBtn.addEventListener("click", cb);
   }
 
-  /**
-   * Rejestruje funkcję zwrotną dla kliknięcia przycisku "Powrót".
-   * @param {Function} cb - Funkcja zwrotna.
-   */
+  // Rejestruje funkcję zwrotną dla przycisku "Powrót".
   onReturn(cb) {
     this.returnBtn.addEventListener("click", cb);
   }
