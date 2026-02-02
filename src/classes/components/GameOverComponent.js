@@ -2,17 +2,14 @@ class GameOverComponent {
   constructor() {
     this.mounted = false;
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
 
-    // title nodes
     this.titleText = document.createElement("div");
     this.titleText.textContent = "Koniec gry";
     this.titleText.classList.add("node-title");
     this.wrapper.appendChild(this.titleText);
 
-    // stats nodes
     this.scoreText = document.createElement("div");
     this.levelText = document.createElement("div");
 
@@ -27,7 +24,6 @@ class GameOverComponent {
 
     this.wrapper.appendChild(this.infoWrapper);
 
-    // btns nodes
     this.btnsWrapper = document.createElement("div");
     this.btnsWrapper.classList.add("node-btns-wrapper");
 

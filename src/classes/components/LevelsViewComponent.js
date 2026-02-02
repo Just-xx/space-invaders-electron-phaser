@@ -3,7 +3,7 @@ const lvlImgsGlob = import.meta.glob("../../assets/levels/*.{png,jpg,jpeg,svg}",
 const lvlImgs = Object.fromEntries(
   Object.entries(lvlImgsGlob).map(([path, module]) => {
     return [
-      path.split("/").pop().split(".")[0], // wyciąga "photo" z "./assets/photo.png"
+      path.split("/").pop().split(".")[0],
       module.default,
     ];
   })
@@ -16,24 +16,20 @@ class LevelsViewComponent {
     this.mainMenuController = mainMenuController;
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("level-view-wrapper");
 
-    // title
     this.title = document.createElement("h2");
     this.title.textContent = "Wybierz poziom (1-15)";
 
     this.wrapper.appendChild(this.title);
 
-    // levels wrapper
     this.levelsWrapper = document.createElement("div");
     this.levelsWrapper.classList.add("level-view-levels-wrapper");
 
     this.wrapper.appendChild(this.levelsWrapper);
     this.generateLevelBtns();
 
-    // return btn
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("level-view-return-btn");
@@ -59,7 +55,6 @@ class LevelsViewComponent {
     passedLevels = passedLevels.map(item => parseInt(item));
 
     for (let i = 0; i < 15; i++) {
-
       const lvlButton = document.createElement("button");
       lvlButton.dataset.level = i + 1;
       lvlButton.classList.add("btn");
@@ -79,7 +74,7 @@ class LevelsViewComponent {
       setTimeout(() => {
         lvlButton.style.opacity = '1';
         lvlButton.style.transform = 'translateY(0px)';
-      }, 40 * (i + 1))
+      }, 40 * (i + 1));
       
       lvlButton.addEventListener("click", e => this.handleLevelBtnClick(e));
     }
@@ -120,7 +115,6 @@ class LevelsViewComponent {
 
     this.levelsWrapper.replaceChildren();
     
-
     setTimeout(() => {
       this.wrapper.style.opacity = "1";
       this.generateLevelBtns();

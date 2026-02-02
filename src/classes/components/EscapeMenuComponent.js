@@ -3,17 +3,14 @@ class EscapeMenuComponent {
     this.mounted = false;
     this.visible = false;
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
 
-    // title nodes
     this.titleText = document.createElement("div");
     this.titleText.textContent = "Pauza";
     this.titleText.classList.add("node-title");
     this.wrapper.appendChild(this.titleText);
 
-    // btns nodes
     this.btnsWrapper = document.createElement("div");
     this.btnsWrapper.classList.add("node-btns-wrapper");
     this.btnsWrapper.classList.add("lc-node-btns-wrapper");

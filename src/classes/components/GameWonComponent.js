@@ -2,12 +2,10 @@ class GameWonComponent {
   constructor() {
     this.mounted = false;
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
     this.wrapper.classList.add("game-won-node-wrapper");
 
-    // title nodes
     this.titleText = document.createElement("div");
     this.titleText.textContent = "Gratulacje!";
     this.titleText.classList.add("node-title");
@@ -18,7 +16,6 @@ class GameWonComponent {
     this.subtitleText.classList.add("node-subtitle");
     this.wrapper.appendChild(this.subtitleText);
 
-    // btns nodes
     this.btnsWrapper = document.createElement("div");
     this.btnsWrapper.classList.add("node-btns-wrapper");
     this.returnBtn = document.createElement("button");

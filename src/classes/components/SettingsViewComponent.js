@@ -5,28 +5,23 @@ class SettingsViewComponent {
     this.mainMenuController = mainMenuController;
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("settings-view-wrapper");
 
-    // title
     this.title = document.createElement("h2");
     this.title.textContent = "Dostosuj ustawienia";
 
     this.wrapper.appendChild(this.title);
 
-    // settings wrapper
     this.settingsWrapper = document.createElement("div");
     this.settingsWrapper.classList.add("settings-view-settings-wrapper");
 
     this.wrapper.appendChild(this.settingsWrapper);
 
-    // add settings elements
     this.addVolumeControl("Głośność efektów: ", "volume-effects");
     this.addVolumeControl("Głośność muzyki: ", "volume-music");
     this.addFullscreenToggle("Tryb pełnoekranowy: ", "fullscreen");
 
-    // return btn
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("settings-view-return-btn");
@@ -40,17 +35,13 @@ class SettingsViewComponent {
 
     this.wrapper.appendChild(this.returnBtn);
 
-    // mount and hide
     this.mount();
     this.hide();
 
-    // other
     this.applyFullscreenMode(this.getFullscreenMode());
   }
 
   addVolumeControl(text, id) {
-    // "id" is used both for html element id and name of the option in local storage
-
     const settingWrapper = document.createElement("div");
     settingWrapper.classList.add("setting-volume");
     settingWrapper.classList.add("setting");

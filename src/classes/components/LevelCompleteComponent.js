@@ -2,17 +2,14 @@ class LevelCompleteComponent {
   constructor() {
     this.mounted = false;
 
-    // wrapper
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
 
-    // title nodes
     this.titleText = document.createElement("div");
     this.titleText.textContent = "Poziom ukończony!";
     this.titleText.classList.add("node-title");
     this.wrapper.appendChild(this.titleText);
 
-    // stats nodes
     this.scoreText = document.createElement("div");
     this.levelText = document.createElement("div");
 
@@ -27,7 +24,6 @@ class LevelCompleteComponent {
 
     this.wrapper.appendChild(this.infoWrapper);
 
-    // btns nodes
     this.btnsWrapper = document.createElement("div");
     this.btnsWrapper.classList.add("node-btns-wrapper");
 
@@ -56,7 +52,7 @@ class LevelCompleteComponent {
     document.querySelector("#game").appendChild(this.wrapper);
   }
 
- show() {
+  show() {
     this.wrapper.style.display = "flex";
     this.wrapper.style.opacity = "1";
   }
@@ -73,7 +69,7 @@ class LevelCompleteComponent {
   }
 
   setLevel(level) {
-    this.levelText.innerHTML = `Ukończony poziom: <b>${level}</b>`
+    this.levelText.innerHTML = `Ukończony poziom: <b>${level}</b>`;
   }
 
   onNextLevelClick(cb) {
