@@ -1,50 +1,62 @@
+/**
+ * Reprezentuje komponent widoku ustawień.
+ * Pozwala graczowi na dostosowanie głośności i trybu pełnoekranowego.
+ */
 class SettingsViewComponent {
+  /**
+   * Tworzy instancję komponentu widoku ustawień.
+   * @param {MainMenuController} mainMenuController - Kontroler menu głównego.
+   * @param {Phaser.Game} game - Instancja gry Phaser.
+   */
   constructor(mainMenuController, game) {
     this.game = game;
     this.mounted = false;
     this.mainMenuController = mainMenuController;
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
+    // Utworzenie głównych elementów DOM
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("settings-view-wrapper");
 
     this.title = document.createElement("h2");
     this.title.textContent = "Dostosuj ustawienia";
-
     this.wrapper.appendChild(this.title);
 
     this.settingsWrapper = document.createElement("div");
     this.settingsWrapper.classList.add("settings-view-settings-wrapper");
-
     this.wrapper.appendChild(this.settingsWrapper);
 
+    // Dodanie kontrolek ustawień
     this.addVolumeControl("Głośność efektów: ", "volume-effects");
     this.addVolumeControl("Głośność muzyki: ", "volume-music");
     this.addFullscreenToggle("Tryb pełnoekranowy: ", "fullscreen");
 
+    // Przycisk powrotu
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("settings-view-return-btn");
-
     this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
-
     this.returnBtn.addEventListener("click", () => {
       this.hide();
       this.mainMenuController.show();
     });
-
     this.wrapper.appendChild(this.returnBtn);
 
     this.mount();
     this.hide();
 
+    // Zastosowanie trybu pełnoekranowego przy starcie
     this.applyFullscreenMode(this.getFullscreenMode());
   }
 
+  /**
+   * Dodaje kontrolkę głośności (suwak) do widoku ustawień.
+   * @param {string} text - Etykieta kontrolki.
+   * @param {string} id - ID dla elementu i klucz w localStorage.
+   */
   addVolumeControl(text, id) {
     const settingWrapper = document.createElement("div");
-    settingWrapper.classList.add("setting-volume");
-    settingWrapper.classList.add("setting");
+    settingWrapper.classList.add("setting-volume", "setting");
 
     const settingLabel = document.createElement("label");
     settingLabel.textContent = text;
@@ -67,32 +79,31 @@ class SettingsViewComponent {
     settingWrapper.appendChild(displayText);
 
     settingInput.addEventListener("input", e => this.handleVolumeChange(e, displayText));
-
     this.settingsWrapper.appendChild(settingWrapper);
   }
 
+  /**
+   * Pobiera ustawienia głośności z localStorage lub zwraca wartości domyślne.
+   * @returns {{effects: number, music: number}} Obiekt z poziomami głośności.
+   */
   getVolume() {
     let volumeEffects = window.localStorage.getItem("volume-effects");
     let volumeMusic = window.localStorage.getItem("volume-music");
 
-    if (volumeEffects) volumeEffects = parseFloat(volumeEffects);
-    else volumeEffects = 0.3;
+    volumeEffects = volumeEffects ? parseFloat(volumeEffects) : 0.3;
+    volumeMusic = volumeMusic ? parseFloat(volumeMusic) : 0.15;
 
-    if (volumeMusic) volumeMusic = parseFloat(volumeMusic);
-    else volumeMusic = 0.15;
-
-    const volume = {
-      effects: volumeEffects,
-      music: volumeMusic,
-    };
-
-    return volume;
+    return { effects: volumeEffects, music: volumeMusic };
   }
 
+  /**
+   * Dodaje przełącznik trybu pełnoekranowego.
+   * @param {string} text - Etykieta przełącznika.
+   * @param {string} id - ID dla elementu i klucz w localStorage.
+   */
   addFullscreenToggle(text, id) {
     const settingWrapper = document.createElement("div");
-    settingWrapper.classList.add("setting-fullscreen");
-    settingWrapper.classList.add("setting");
+    settingWrapper.classList.add("setting-fullscreen", "setting");
 
     const settingLabel = document.createElement("label");
     settingLabel.textContent = text;
@@ -105,7 +116,7 @@ class SettingsViewComponent {
     settingInput.type = "checkbox";
     settingInput.id = id;
     settingInput.name = id;
-    settingInput.checked = isActive;
+    settingInput.checked = !!isActive;
     settingWrapper.appendChild(settingInput);
 
     const displayText = document.createElement("span");
@@ -122,12 +133,17 @@ class SettingsViewComponent {
     });
 
     document.addEventListener("fullscreenchange", () => {
-      const isActive = document.fullscreenElement ? true : false;
-      settingInput.checked = isActive;
-      displayText.textContent = isActive ? "Wł." : "Wył.";
+      const isFullScreen = !!document.fullscreenElement;
+      settingInput.checked = isFullScreen;
+      displayText.textContent = isFullScreen ? "Wł." : "Wył.";
     });
   }
 
+  /**
+   * Obsługuje zmianę wartości głośności i zapisuje ją w localStorage.
+   * @param {Event} e - Zdarzenie input.
+   * @param {HTMLElement} displayText - Element do wyświetlania wartości.
+   */
   handleVolumeChange(e, displayText) {
     const val = e.target.value;
     const id = e.target.id;
@@ -138,65 +154,75 @@ class SettingsViewComponent {
     this.mainMenuController.music.volume = this.getVolume().music;
   }
 
+  /**
+   * Obsługuje zmianę trybu pełnoekranowego i zapisuje stan w localStorage.
+   * @param {Event} e - Zdarzenie input.
+   * @param {HTMLElement} displayText - Element do wyświetlania stanu.
+   */
   handleFullscreenModeChange(e, displayText) {
     const checked = e.target.checked ? 1 : 0;
     const id = e.target.id;
 
     displayText.textContent = checked ? "Wł." : "Wył.";
-
     window.localStorage.setItem(id, checked);
-    this.applyFullscreenMode(this.getFullscreenMode());
+    this.applyFullscreenMode(!!checked);
   }
 
+  /**
+   * Włącza lub wyłącza tryb pełnoekranowy za pomocą Electron API.
+   * @param {boolean} checked - Czy tryb pełnoekranowy ma być włączony.
+   */
   applyFullscreenMode(checked) {
     window.electronAPI.toggleFullScreen(checked);
   }
 
+  /**
+   * Pobiera stan trybu pełnoekranowego z localStorage.
+   * @returns {number} 1, jeśli włączony, 0, jeśli wyłączony.
+   */
   getFullscreenMode() {
-    let fsActive = window.localStorage.getItem("fullscreen");
-
-    if (fsActive) fsActive = parseInt(fsActive);
-    else fsActive = 0;
-
-    return fsActive;
+    const fsActive = window.localStorage.getItem("fullscreen");
+    return fsActive ? parseInt(fsActive) : 0;
   }
 
+  /**
+   * Ukrywa komponent widoku ustawień z animacją.
+   */
   hide() {
     window.removeEventListener("keydown", this.boundHandleEscapeKey);
-
     this.wrapper.style.opacity = "0";
     setTimeout(() => {
       this.wrapper.style.display = "none";
-
       const settingWrappersRows = this.settingsWrapper.children;
-      for (let i = 0; i < settingWrappersRows.length; i++) {
-        const row = settingWrappersRows[i];
+      for (const row of settingWrappersRows) {
         row.style.opacity = "";
         row.style.transform = "";
       }
     }, 200);
   }
 
+  /**
+   * Pokazuje komponent widoku ustawień z animacją.
+   */
   show() {
     window.addEventListener("keydown", this.boundHandleEscapeKey);
-
     this.wrapper.style.display = "block";
     this.wrapper.style.opacity = "0";
     setTimeout(() => (this.wrapper.style.opacity = "1"), 200);
 
     const settingWrappersRows = this.settingsWrapper.children;
-
     for (let i = 0; i < settingWrappersRows.length; i++) {
-      setTimeout(
-        () => {
-          settingWrappersRows[i].style.opacity = 1;
-          settingWrappersRows[i].style.transform = "translateY(0px)";
-        },
-        (i + 1) * 100
-      );
+      setTimeout(() => {
+        settingWrappersRows[i].style.opacity = 1;
+        settingWrappersRows[i].style.transform = "translateY(0px)";
+      }, (i + 1) * 100);
     }
   }
 
+  /**
+   * Obsługuje naciśnięcie klawisza Escape, aby powrócić do menu głównego.
+   * @param {KeyboardEvent} e - Zdarzenie klawiatury.
+   */
   handleEscapeKey(e) {
     if (e.key === "Escape") {
       this.hide();
@@ -204,6 +230,9 @@ class SettingsViewComponent {
     }
   }
 
+  /**
+   * Montuje komponent w DOM, jeśli nie został jeszcze zamontowany.
+   */
   mount() {
     if (this.mounted) return;
     this.mounted = true;

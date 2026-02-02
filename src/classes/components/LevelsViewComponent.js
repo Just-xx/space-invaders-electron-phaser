@@ -1,72 +1,93 @@
+// Importowanie obrazów poziomów
 const lvlImgsGlob = import.meta.glob("../../assets/levels/*.{png,jpg,jpeg,svg}", {eager: true});
 
+// Przetwarzanie zaimportowanych obrazów na obiekt, gdzie kluczem jest numer poziomu
 const lvlImgs = Object.fromEntries(
   Object.entries(lvlImgsGlob).map(([path, module]) => {
     return [
-      path.split("/").pop().split(".")[0],
+      path.split("/").pop().split(".")[0], // np. "1" z "./assets/levels/1.png"
       module.default,
     ];
   })
 );
 
+/**
+ * Reprezentuje komponent widoku wyboru poziomów.
+ * Pozwala graczowi wybrać poziom do rozegrania.
+ */
 class LevelsViewComponent {
+  /**
+   * Tworzy instancję komponentu widoku poziomów.
+   * @param {MainMenuController} mainMenuController - Kontroler menu głównego.
+   * @param {Phaser.Game} game - Instancja gry Phaser.
+   */
   constructor(mainMenuController, game) {
+    /**
+     * @property {Phaser.Game} game - Instancja gry Phaser.
+     */
     this.game = game;
+    /**
+     * @property {boolean} mounted - Wskazuje, czy komponent jest zamontowany w DOM.
+     */
     this.mounted = false;
+    /**
+     * @property {MainMenuController} mainMenuController - Kontroler menu głównego.
+     */
     this.mainMenuController = mainMenuController;
+    /**
+     * @property {Function} boundHandleEscapeKey - Powiązana funkcja obsługi klawisza Escape.
+     */
     this.boundHandleEscapeKey = this.handleEscapeKey.bind(this);
 
+    // Utworzenie głównych elementów DOM dla komponentu
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("level-view-wrapper");
 
     this.title = document.createElement("h2");
     this.title.textContent = "Wybierz poziom (1-15)";
-
     this.wrapper.appendChild(this.title);
 
     this.levelsWrapper = document.createElement("div");
     this.levelsWrapper.classList.add("level-view-levels-wrapper");
-
     this.wrapper.appendChild(this.levelsWrapper);
+
     this.generateLevelBtns();
 
     this.returnBtn = document.createElement("button");
     this.returnBtn.classList.add("btn");
     this.returnBtn.classList.add("level-view-return-btn");
-
     this.returnBtn.innerHTML = `<i class="ri-arrow-left-fill"></i>Powrót`;
-
     this.returnBtn.addEventListener("click", () => {
       this.hide();
       this.mainMenuController.show();
     });
-
     this.wrapper.appendChild(this.returnBtn);
 
     this.mount();
     this.hide();
   }
 
+  /**
+   * Generuje przyciski wyboru poziomu na podstawie dostępnych obrazów i ukończonych poziomów.
+   */
   generateLevelBtns() {
     let passedLevels = window.localStorage.getItem("passed-levels");
-    if (passedLevels) passedLevels = passedLevels.split(",");
-    else passedLevels = [];
-
-    passedLevels = passedLevels.map(item => parseInt(item));
+    passedLevels = passedLevels ? passedLevels.split(",").map(item => parseInt(item)) : [];
 
     for (let i = 0; i < 15; i++) {
       const lvlButton = document.createElement("button");
       lvlButton.dataset.level = i + 1;
       lvlButton.classList.add("btn");
 
-      if (passedLevels.indexOf(i + 1) > -1)
+      if (passedLevels.includes(i + 1)) {
         lvlButton.innerHTML = `<span class="lvl-done">${i + 1}<span>ukończony<span><span>`;
-      else lvlButton.innerHTML = `<span>${i + 1}<span>`;
+      } else {
+        lvlButton.innerHTML = `<span>${i + 1}<span>`;
+      }
 
       const image = document.createElement("img");
       image.src = lvlImgs[i + 1];
       image.alt = i + 1;
-
       lvlButton.appendChild(image);
 
       this.levelsWrapper.appendChild(lvlButton);
@@ -80,8 +101,12 @@ class LevelsViewComponent {
     }
   }
 
+  /**
+   * Obsługuje kliknięcie przycisku wyboru poziomu, uruchamiając odpowiednią scenę gry.
+   * @param {Event} e - Zdarzenie kliknięcia.
+   */
   handleLevelBtnClick(e) {
-    const level = parseInt(e.target.dataset.level);
+    const level = parseInt(e.currentTarget.dataset.level);
 
     this.game.scene.start("scene-game", {level: level});
     this.game.scene.start("scene-ui", this.mainMenuController);
@@ -91,16 +116,21 @@ class LevelsViewComponent {
     this.mainMenuController.hide();
   }
 
+  /**
+   * Ukrywa komponent widoku poziomów.
+   */
   hide() {
     window.removeEventListener("keydown", this.boundHandleEscapeKey);
-
     this.wrapper.style.opacity = "0";
-
     setTimeout(() => {
       this.wrapper.style.display = "none";
     }, 200);
   }
 
+  /**
+   * Obsługuje naciśnięcie klawisza Escape, aby powrócić do menu głównego.
+   * @param {KeyboardEvent} e - Zdarzenie klawiatury.
+   */
   handleEscapeKey(e) {
     if (e.key === "Escape") {
       this.hide();
@@ -108,6 +138,9 @@ class LevelsViewComponent {
     }
   }
 
+  /**
+   * Pokazuje komponent widoku poziomów i ponownie generuje przyciski.
+   */
   show() {
     this.wrapper.style.display = "block";
     this.wrapper.style.opacity = "0";
@@ -121,6 +154,9 @@ class LevelsViewComponent {
     }, 200);
   }
 
+  /**
+   * Montuje komponent w DOM, dołączając go do elementu gry.
+   */
   mount() {
     if (this.mounted) return;
     this.mounted = true;

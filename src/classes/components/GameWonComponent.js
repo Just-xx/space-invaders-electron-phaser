@@ -1,7 +1,18 @@
+/**
+ * Reprezentuje komponent ekranu wygranej gry.
+ * Wyświetlany, gdy gracz ukończy wszystkie poziomy.
+ */
 class GameWonComponent {
+  /**
+   * Tworzy instancję komponentu wygranej gry.
+   */
   constructor() {
+    /**
+     * @property {boolean} mounted - Wskazuje, czy komponent jest zamontowany w DOM.
+     */
     this.mounted = false;
 
+    // Utworzenie głównych elementów DOM dla komponentu
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("node-wrapper");
     this.wrapper.classList.add("game-won-node-wrapper");
@@ -31,17 +42,26 @@ class GameWonComponent {
     this.hide();
   }
 
+  /**
+   * Montuje komponent w DOM, dołączając go do elementu gry.
+   */
   mount() {
     if (this.mounted) return;
     this.mounted = true;
     document.querySelector("#game").appendChild(this.wrapper);
   }
 
+  /**
+   * Pokazuje ekran wygranej gry.
+   */
   show() {
     this.wrapper.style.display = "flex";
     this.wrapper.style.opacity = "1";
   }
 
+  /**
+   * Ukrywa ekran wygranej gry.
+   */
   hide() {
     this.wrapper.style.opacity = "0";
     setTimeout(() => {
@@ -49,6 +69,10 @@ class GameWonComponent {
     }, 200);
   }
 
+  /**
+   * Rejestruje funkcję zwrotną dla kliknięcia przycisku "Powrót do menu".
+   * @param {Function} cb - Funkcja zwrotna.
+   */
   onReturn(cb) {
     this.returnBtn.addEventListener("click", cb);
   }
