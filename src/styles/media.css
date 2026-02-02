@@ -1,26 +1,17 @@
+/* Plik CSS z opisem zachowania elementu, w przypadku zmniejsza lub zwiększania okna aplikacji*/
+
+/* Style zawarte w nawiasach będą stosowane poniżej szerokośći 1320px*/
 @media (max-width: 1320px) {
   #hero-menu-img {
     width: 500px;
   }
 
   .menu-btn {
-    /* font-size: 1rem; */
     width: 90%;
   }
-
-  /* #menu-title {
-    font-size: 3.7rem;
-  }
-
-  #menu-subtitle {
-    font-size: 1.25rem;
-  }
-
-  #menu-author {
-    font-size: 0.6rem;
-  } */
 }
 
+/* Style zawarte w nawiasach będą stosowane poniżej szerokośći 1096px*/
 @media (max-width: 1096px) {
 
   html, body {
@@ -35,9 +26,6 @@
     font-size: .7rem;
   }
 
-  .level-view-levels-wrapper .btn span {
-    /* font-size: 1rem; */
-  }
 
   .level-view-levels-wrapper {
     gap: 10px;

@@ -1,37 +1,51 @@
+// Import biblioteki Phaser i klasy BulletsGroup.
 import * as Phaser from "phaser";
 import BulletsGroup from "../groups/BulletsGroup";
 
+// Definicja klasy Player, która dziedziczy po Phaser.Physics.Arcade.Sprite.
+// Reprezentuje statek kosmiczny sterowany przez gracza.
 class Player extends Phaser.Physics.Arcade.Sprite {
+  // Konstruktor klasy, inicjalizuje obiekt gracza.
   constructor(scene, x, y) {
     super(scene, x, y, "player");
 
+    // Dodanie obiektu do sceny i fizyki Phrasera.
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
     this.scene = scene;
-    this.boundsX = this.scene.boundsX;
+    this.boundsX = this.scene.boundsX; // Granice pola gry.
 
-    this.playerSpeed = 800;
-    this.PLAYER_SCALE = 0.14;
-    this.PLAYER_MOVMENT_ANGLE = 5;
+    // Właściwości gracza.
+    this.playerSpeed = 800; // Prędkość poruszania się.
+    this.PLAYER_SCALE = 0.14; // Domyślna skala obiektu.
+    this.PLAYER_MOVMENT_ANGLE = 5; // Kąt przechyłu podczas ruchu.
 
-    this.lives = 3;
-    this.score = 0;
-    this.inputsActive = true;
+    this.lives = 3; // Liczba żyć.
+    this.score = 0; // Wynik.
+    this.inputsActive = true; // Flaga określająca, czy gracz może sterować statkiem.
 
+    // Konfiguracja ciała fizycznego i wyglądu.
     this.body.setAllowGravity(false);
     this.setOrigin(0, 0);
     this.setScale(this.PLAYER_SCALE);
+
+    // Inicjalizacja obsługi klawiatury.
     this.cursor = this.scene.input.keyboard.createCursorKeys();
 
+    // Utworzenie grupy pocisków dla gracza.
     this.bullets = new BulletsGroup(this.scene);
+    // Utworzenie wszystkich systemów cząsteczkowych.
     this.createParticles();
 
-    this.explosionSound = this.scene.sound.add("explosion").setDetune(-500);
-    this.hitSound = this.scene.sound.add("inv-killed").setDetune(1000);
+    // Inicjalizacja dźwięków.
+    this.explosionSound = this.scene.sound.add("explosion").setDetune(-500); // Dźwięk eksplozji z obniżoną tonacją.
+    this.hitSound = this.scene.sound.add("inv-killed").setDetune(1000); // Dźwięk trafienia z podwyższoną tonacją.
   }
 
+  // Metoda tworząca i konfigurująca wszystkie emitery cząsteczek dla gracza.
   createParticles() {
+    // Cząsteczki dla dużej eksplozji przy zniszczeniu (game over).
     this.destroyParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       speed: {min: 150, max: 350},
       angle: {min: 0, max: 360},
@@ -43,6 +57,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
+    // Cząsteczki dla małej eksplozji przy trafieniu (utrata życia).
     this.hitParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       speed: {min: 150, max: 350},
       angle: {min: 0, max: 360},
@@ -54,6 +69,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
+    // Cząsteczki dla śladu silnika podczas ruchu.
     this.thrustParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       frequency: 1,
       speed: {min: 450, max: 600},
@@ -67,6 +83,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
+    // Cząsteczki dla efektu silnika gdy statek stoi w miejscu.
     this.stationaryParticles = this.scene.add.particles(0, 0, "bullet-type1", {
       frequency: 20,
       speed: {min: 100, max: 200},
@@ -80,19 +97,23 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       emitting: false,
     });
 
+    // Przypisanie emiterów do pozycji statku.
     this.thrustParticles.startFollow(this, this.displayWidth / 2, this.displayHeight + 15);
     this.stationaryParticles.startFollow(this, this.displayWidth / 2, this.displayHeight + 15);
   }
 
+  // Resetuje wygląd i prędkość statku do stanu spoczynku.
   setStationary() {
     this.setAngle(0);
     this.setScale(this.PLAYER_SCALE);
     this.setVelocity(0);
   }
 
+  // Metoda cyklu życia, wywoływana w każdej klatce. Odpowiada za logikę sterowania.
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
+    // Jeśli gracz nie ma żyć, sterowanie jest nieaktywne lub gra jest zatrzymana, zresetuj stan i zakończ.
     if (this.lives <= 0 || !this.inputsActive || this.scene.disableProgress) {
       this.thrustParticles.stop();
       this.stationaryParticles.stop();
@@ -101,15 +122,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     const {left, right} = this.cursor;
 
+    // Logika ruchu w lewo.
     if (left.isDown && this.x >= this.boundsX.left) {
-      this.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE);
-      this.setAngle(-this.PLAYER_MOVMENT_ANGLE);
-      this.setVelocityX(-this.playerSpeed);
-      this.flipX = true;
+      this.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE); // Lekkie rozciągnięcie w poziomie.
+      this.setAngle(-this.PLAYER_MOVMENT_ANGLE); // Przechył.
+      this.setVelocityX(-this.playerSpeed); // Ustawienie prędkości.
+      this.flipX = true; // Odwrócenie tekstury (jeśli jest asymetryczna).
 
       this.stationaryParticles.stop();
-      this.thrustParticles.start();
-    } else if (right.isDown && this.x <= this.boundsX.right - this.displayWidth) {
+      this.thrustParticles.start(); // Włączenie cząsteczek ruchu.
+    }
+    // Logika ruchu w prawo.
+    else if (right.isDown && this.x <= this.boundsX.right - this.displayWidth) {
       this.setScale(this.PLAYER_SCALE + 0.01, this.PLAYER_SCALE);
       this.setAngle(this.PLAYER_MOVMENT_ANGLE);
       this.setVelocityX(this.playerSpeed);
@@ -117,33 +141,40 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
       this.stationaryParticles.stop();
       this.thrustParticles.start();
-    } else {
+    }
+    // Stan spoczynku.
+    else {
       this.setStationary();
-
       this.thrustParticles.stop();
-      this.stationaryParticles.start();
+      this.stationaryParticles.start(); // Włączenie cząsteczek stanu gdy statek stoi.
     }
 
+    // Obsługa strzelania.
     this.bullets.handleInput(this);
   }
 
+  // Dodaje punkty do wyniku gracza.
   addScore(amount = 20) {
     this.score += amount;
   }
 
+  // Uruchamia sekwencję końca gry.
   gameOver() {
     this.lives = 0;
     this.inputsActive = false;
-    this.setImmovable(true);
-    this.destroyEffect();
+    this.setImmovable(true); // Zatrzymuje statek na stałe.
+    this.destroyEffect(); // Uruchamia efekt zniszczenia.
     this.thrustParticles.stop();
   }
 
+  // Uruchamia efekt po trafieniu, gdy gracz ma jeszcze życia (tymczasowa nietykalność).
   respawnEffect(bullet) {
-    this.inputsActive = false;
+    this.inputsActive = false; // Chwilowe zablokowanie sterowania.
 
+    // Mała eksplozja w miejscu trafienia.
     this.hitParticles.explode(5, bullet.x + bullet.displayWidth / 2, bullet.y + bullet.displayHeight / 2);
 
+    // Animacja migania (efekt nietykalności).
     this.scene.tweens.add({
       targets: this,
       alpha: {from: 0.2, to: 1},
@@ -153,16 +184,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: 3,
       onComplete: () => {
         this.alpha = 1;
-        this.inputsActive = true;
+        this.inputsActive = true; // Przywrócenie sterowania po zakończeniu animacji.
       },
     });
 
     this.hitSound.play({volume: this.scene.volume.effects});
   }
 
+  // Uruchamia efekt wizualny zniszczenia statku.
   destroyEffect() {
     this.inputsActive = false;
+    // Duża eksplozja.
     this.destroyParticles.explode(60, this.x + this.displayWidth / 2, this.y + this.displayHeight / 2);
+    // Animacja znikania.
     this.scene.tweens.add({
       targets: this,
       alpha: 0,
@@ -173,15 +207,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.explosionSound.play({volume: this.scene.volume.effects});
   }
 
+  // Metoda wywoływana, gdy gracz zostanie trafiony.
   onHit(bullet) {
-    if (!this.inputsActive) return;
+    if (!this.inputsActive) return; // Ignoruj trafienia podczas nietykalności.
     this.lives--;
 
     if (this.lives <= 0) this.gameOver();
     else this.respawnEffect(bullet);
   }
 
+  // Metoda cyklu życia, wywoływana przy niszczeniu obiektu.
   destroy(fromScene) {
+    // Zniszczenie obiektów dźwiękowych, aby zwolnić pamięć.
     this.explosionSound.destroy();
     this.hitSound.destroy();
     super.destroy(fromScene);

@@ -1,6 +1,11 @@
+/* Główny plik CSS. Opsuje wygląd wszystkich elementów HTML w aplikacji. */
+
+
+/* Importowanie innych plików css, by zostały one uwzględnione w pliku wynikowym */
 @import "./fonts.css";
 @import "./vars.css";
 @import "../assets/fonts/RemixIcon_Font/remixicon.css";
+
 
 * {
   font-family: "Orbitron";
